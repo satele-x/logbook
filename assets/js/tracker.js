@@ -236,6 +236,9 @@ function indexTwins() {
     TWINS.set(k, t);
   })));
 }
+// only shop items and tiered upgrades (permits) can be wished; a wished blueprint brings its recipe along
+const canWish = it => !!(it.official && (it.price || (it.levels && it.levels.length)));
+const isWished = it => it.fav && (canWish(it) || !!(shopTwin(it) && shopTwin(it).it.fav));
 const shopTwin = it => { const t = TWINS.get(it.name.toLowerCase()); return t && t.shop && t.shop.it !== it ? t.shop : null; };
 
 /* ---------- derived ---------- */
@@ -268,7 +271,7 @@ function catStats(c) {
   return { n, total, full, items: c.items.length };
 }
 function menuStats(m) { let n = 0, t = 0; m.cats.forEach(c => { const s = catStats(c); n += s.full; t += s.items; }); return { n, t }; }
-function allPinned() { const out = []; state.menus.forEach(m => m.cats.forEach(c => c.items.forEach(it => { if (it.pinned) out.push({ m, c, it }); }))); return out; }
+function allPinned() { const out = []; state.menus.forEach(m => m.cats.forEach(c => c.items.forEach(it => { if (it.pinned && !it.price) out.push({ m, c, it }); /* shop items use the wishlist, not pins */ }))); return out; }
 function locate(id) { for (const m of state.menus) for (const c of m.cats) { const it = c.items.find(x => x.id === id); if (it) return { m, c, it }; } return null; }
 function questDone(name) {
   const k = name.toLowerCase();
@@ -344,12 +347,12 @@ function levelCard(c, it, where) {
     track += `<button class="lv-dot ${i < it.lv ? 'on' : ''}" data-act="lvl" data-id="${esc(it.id)}" data-i="${i}" title="${esc(l.label)}${l.needs.length ? ' · ' + esc(l.needs.map(fmtQty).join(' + ')) : ''}" aria-label="${esc(l.label)}${i < it.lv ? ' (done)' : ''}"></button>`;
   });
   return `<div class="item lvl-card ${maxed ? 'done' : ''} ${it.pinned ? 'pinned' : ''}">
-    ${it.pinned ? '<span class="fav-badge">📌</span>' : it.fav ? '<span class="fav-badge">💝</span>' : ''}
+    ${it.pinned && !it.price ? '<span class="fav-badge">📌</span>' : isWished(it) ? '<span class="fav-badge">💝</span>' : ''}
     <div class="lc-top">
       <div class="txt">${where ? `<div class="where">${where}</div>` : ''}<div class="nm">${esc(it.name)}</div>${it.note ? `<div class="note">${esc(it.note)}</div>` : ''}${it.myNote ? `<div class="mynote">📝 ${esc(it.myNote)}</div>` : ''}</div>
       <div class="acts">
         <button class="pin ${it.pinned ? 'on' : ''}" data-act="pin" data-id="${esc(it.id)}" title="${it.pinned ? 'Unpin' : 'Pin — add the next upgrade to your gather list'}" aria-label="${it.pinned ? 'Unpin' : 'Pin'} ${esc(it.name)}">${it.pinned ? '📌' : '📍'}</button>
-        <button class="fav ${it.fav ? 'on' : ''}" data-act="fav" data-id="${esc(it.id)}" title="${it.fav ? 'Remove from wishlist' : 'Add to wishlist'}" aria-label="${it.fav ? 'Remove' : 'Add'} ${esc(it.name)} ${it.fav ? 'from' : 'to'} wishlist">${it.fav ? '💝' : '🤍'}</button>
+        ${canWish(it) ? `<button class="fav ${it.fav ? 'on' : ''}" data-act="fav" data-id="${esc(it.id)}" title="${it.fav ? 'Remove from wishlist' : 'Add to wishlist'}" aria-label="${it.fav ? 'Remove' : 'Add'} ${esc(it.name)} ${it.fav ? 'from' : 'to'} wishlist">${it.fav ? '💝' : '🤍'}</button>` : ''}
         <button data-act="editItem" data-id="${esc(it.id)}" title="Notes" aria-label="Edit ${esc(it.name)}">✏️</button>
       </div>
     </div>
@@ -384,12 +387,12 @@ function itemCard(c, it, where) {
   if (!d && !locked && c.ordered && c.items.find(x => !isDone(c, x)) === it) next = true;
   return `<div class="item ${d ? 'done' : ''} ${it.pinned ? 'pinned' : ''} ${locked ? 'locked' : ''} ${next ? 'next' : ''} ${dots ? 'has-levels' : ''}">${dots}
     ${next ? '<span class="next-badge">▶ next up</span>' : ''}
-    ${it.pinned ? '<span class="fav-badge">📌</span>' : it.fav ? '<span class="fav-badge">💝</span>' : ''}
+    ${it.pinned && !it.price ? '<span class="fav-badge">📌</span>' : isWished(it) ? '<span class="fav-badge">💝</span>' : ''}
     <button class="check" data-act="toggle" data-id="${esc(it.id)}" aria-label="${d ? 'Untick' : 'Tick'} ${esc(it.name)}">${CHECK_SVG}</button>
     <div class="txt">${where ? `<div class="where">${where}</div>` : ''}<div class="nm">${esc(it.name)}${SHOW_NEW_BADGES && NEW.has(it.id) ? '<span class="new-pill">new!</span>' : ''}${!it.official ? '<span class="mine">✎ mine</span>' : ''}</div>${it.note ? `<div class="note">${esc(it.note)}</div>` : ''}${it.myNote ? `<div class="mynote">📝 ${esc(it.myNote)}</div>` : ''}${status}${tags}</div>
     <div class="acts">
-      <button class="pin ${it.pinned ? 'on' : ''}" data-act="pin" data-id="${esc(it.id)}" title="${it.pinned ? 'Unpin' : 'Pin — keep it in your Pinned tab'}" aria-label="${it.pinned ? 'Unpin' : 'Pin'} ${esc(it.name)}">${it.pinned ? '📌' : '📍'}</button>
-      <button class="fav ${it.fav ? 'on' : ''}" data-act="fav" data-id="${esc(it.id)}" title="${it.fav ? 'Remove from wishlist' : 'Add to wishlist'}" aria-label="${it.fav ? 'Remove' : 'Add'} ${esc(it.name)} ${it.fav ? 'from' : 'to'} wishlist">${it.fav ? '💝' : '🤍'}</button>
+      ${it.price ? '' : `<button class="pin ${it.pinned ? 'on' : ''}" data-act="pin" data-id="${esc(it.id)}" title="${it.pinned ? 'Unpin' : 'Pin — keep it in your Pinned tab'}" aria-label="${it.pinned ? 'Unpin' : 'Pin'} ${esc(it.name)}">${it.pinned ? '📌' : '📍'}</button>`}
+      ${canWish(it) ? `<button class="fav ${it.fav ? 'on' : ''}" data-act="fav" data-id="${esc(it.id)}" title="${it.fav ? 'Remove from wishlist' : 'Add to wishlist'}" aria-label="${it.fav ? 'Remove' : 'Add'} ${esc(it.name)} ${it.fav ? 'from' : 'to'} wishlist">${it.fav ? '💝' : '🤍'}</button>` : ''}
       <button data-act="editItem" data-id="${esc(it.id)}" title="Edit / notes" aria-label="Edit ${esc(it.name)}">✏️</button>
     </div>
   </div>`;
@@ -447,7 +450,7 @@ function wishGoals() {
     const g = goals.get(k) || { name: it.name, members: [] };
     g.members.push({ m, c, it }); goals.set(k, g);
   })));
-  return [...goals.values()].map(g => (g.done = g.members.every(x => isDone(x.c, x.it)), g));
+  return [...goals.values()].filter(g => g.members.some(x => canWish(x.it))).map(g => (g.done = g.members.every(x => isDone(x.c, x.it)), g));
 }
 function renderWish() {
   const v = $('#catView'), goals = wishGoals(), hide = U.ui.hideDone;
@@ -456,6 +459,11 @@ function renderWish() {
   goals.forEach(g => g.members.forEach(({ c, it }) => {
     if (isDone(c, it)) return;
     if (it.price) { const [a, b] = priceRange(it.price); addCost(it.cur, a, b); return; }
+    if (it.levels.length) { // next tier of a permit
+      const nx = it.levels[it.lv]; if (!nx) return;
+      nx.needs.forEach(lbl => { const [n, q] = splitQty(lbl), k = n.toLowerCase(); if (CUR_NAME[k]) addCost(k, q, q); else { const t = tally.get(k) || { n, q: 0, qtyKnown: true, for: [] }; t.q += q; t.for.push(it.name + ' → ' + nx.label); tally.set(k, t); } });
+      return;
+    }
     it.parts.forEach(p => {
       if (p.on) return;
       const [n, q] = splitQty(p.label), k = n.toLowerCase();
@@ -490,7 +498,7 @@ function renderWish() {
       ${done ? `<button class="small-btn" data-act="unwishDone">✓ clear finished</button>` : ''}
     </div>
     <div class="toolbar"><label class="toggle"><input type="checkbox" id="hideDone" ${hide ? 'checked' : ''}> hide done</label></div>
-    ${goals.length === 0 ? `<div class="empty"><div class="big">🤍</div>Your wishlist is empty!<br>Tap the <b>🤍</b> on anything you'd love to have — a blueprint in the 🛍️ Shops tab, a recipe, an outfit. Wishing a blueprint adds its recipe too, so you see both the price and the materials ✨</div>` : `
+    ${goals.length === 0 ? `<div class="empty"><div class="big">🤍</div>Your wishlist is empty!<br>Tap the <b>🤍</b> on anything in the 🛍️ Shops tab, or on a building permit. Wishing a blueprint adds its recipe too, so you see both the price and the materials ✨</div>` : `
       ${savings ? `<div class="savings"><div class="gather-h">🐷 Saving up <span>for the stuff you haven't bought yet</span></div>${savings}</div>` : ''}
       ${gather.length ? `<div class="gather"><div class="gather-h">🧺 Materials to craft it all <span>${gather.length} thing${gather.length === 1 ? '' : 's'}</span></div>
         <div class="gather-list">${gather.map(g => `<span class="g" title="for: ${esc(g.for.join(', '))}">${esc(g.n)}${g.qtyKnown ? ` <b>×${g.q.toLocaleString('en-US')}</b>` : ''}</span>`).join('')}</div>
