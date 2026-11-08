@@ -242,3 +242,9 @@ select.sort{color:var(--ink)}
 .save-top .have input{width:110px;border:2px solid #f1d3e3;border-radius:12px;padding:6px 10px;font:inherit;font-weight:800;color:inherit;background:#fff}
 .save-top .have input:focus{outline:none;border-color:#e9719f}
 .savings .progress{width:100%}
+
+/* contribution-bin efforts */
+.qs.badge-fish-repopulation{background:#dcecff;color:#2f6aa6}
+.qs.badge-global-village{background:#ffe9d9;color:#b0602a}
+.qs.badge-museum-artifact-hunt{background:#ece4ff;color:#6a4fb3}
+.qs.badge-lv-1,.qs.badge-lv-2,.qs.badge-lv-3{background:#f3eef7;color:#7d6a8c}

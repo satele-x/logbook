@@ -95,6 +95,35 @@ function applyMoves() {
   });
 }
 
+/* ---------- daily contribution bins ---------- */
+// A category with "bins" gets one entry per bin holding *today's* request, worked out the same way the game
+// picks it (ported from loftiacodex.com/bins — checked against it day by day). No data updates needed.
+// port of the Codex's (game's) daily bin rotation
+const CRC = (() => { const t = new Uint32Array(256); for (let i = 0; i < 256; i++) { let c = i; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[i] = c >>> 0; } return t; })();
+function crc32(s) { let c = 0xFFFFFFFF; for (const ch of s) { let cp = ch.codePointAt(0); for (let n = 0; n < 4; n++) { c = (c >>> 8) ^ CRC[(c ^ cp) & 255]; cp >>>= 8; } } return (c ^ 0xFFFFFFFF) >>> 0; }
+function mix(a, b) { let c = 2654435769; a >>>= 0; b >>>= 0;
+  a = a - b >>> 0; a = (a ^ b >>> 13) >>> 0; c = c - a - b >>> 0; c = (c ^ a << 8) >>> 0; b = b - c - a >>> 0; b = (b ^ c >>> 13) >>> 0;
+  a = a - b - c >>> 0; a = (a ^ b >>> 12) >>> 0; c = c - a - b >>> 0; c = (c ^ a << 16) >>> 0; b = b - c - a >>> 0; b = (b ^ c >>> 5) >>> 0;
+  a = a - b - c >>> 0; a = (a ^ b >>> 3) >>> 0; c = c - a - b >>> 0; c = (c ^ a << 10) >>> 0; b = b - c - a >>> 0; b = (b ^ c >>> 15) >>> 0; return b; }
+const dv = new DataView(new ArrayBuffer(4));
+function rand01(x) { const t = Math.imul(x >>> 0, 196314165) + 907633515 >>> 0; dv.setUint32(0, (t >>> 9 | 1065353216) >>> 0); return dv.getFloat32(0) - 1; }
+function binPick(bin, now, tz = -3) {
+  const H = 36e5, period = Math.floor(((now + 621355968e5) / H + tz) / bin.hours);
+  const ids = Object.keys(bin.bundles).map(k => 'Bundles.Bins.' + k).sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : a.toLowerCase() > b.toLowerCase() ? 1 : 0);
+  return ids[Math.trunc(rand01(mix(period, crc32(bin.id))) * ids.length)].replace('Bundles.Bins.', '');
+}
+const binSlug = s => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+function refreshBins(now = Date.now()) {
+  DATA.menus.forEach(m => m.cats.forEach(c => {
+    if (!Array.isArray(c.bins)) return;
+    if (!c._base) c._base = c.items || [];
+    c.items = c._base.concat(c.bins.map(b => ({
+      id: c.id + '.bin.' + binSlug(b.name), name: b.name, badges: [b.effort, 'Lv ' + b.lv],
+      needs: b.bundles[binPick(b, now)] || []
+    })));
+  }));
+}
+
 /* ---------- merge DATA + U  →  state ---------- */
 function indexData() {
   IDX = { menus: {}, cats: {}, items: {}, names: {} };
@@ -916,6 +945,7 @@ async function boot() {
     $('#bubble').textContent = 'uh oh, the clouds got in the way ☁️';
     return;
   }
+  refreshBins();
   indexData();
   applyMoves();
   if (DATA.name) { $('#gameTitle').textContent = `${DATA.name} Logbook`; }
@@ -938,7 +968,7 @@ async function boot() {
   });
   // dailies + countdown
   setInterval(() => {
-    if (checkResets()) { save(); render(); toast('🔁 dailies refreshed — new day!'); return; }
+    if (checkResets()) { save(); refreshBins(); indexData(); rebuild(); render(); toast('🔁 new day — fresh dailies & bin requests!'); return; }
     const c = !isSpecial() && curCat(), p = document.querySelector('.reset-pill');
     if (c && c.reset && p) p.textContent = '🔁 resets in ' + fmtLeft(nextBoundary(c, Date.now()) - Date.now());
   }, 60000);
