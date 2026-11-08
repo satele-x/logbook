@@ -112,13 +112,14 @@ function binPick(bin, now, tz = -3) {
   const ids = Object.keys(bin.bundles).map(k => 'Bundles.Bins.' + k).sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : a.toLowerCase() > b.toLowerCase() ? 1 : 0);
   return ids[Math.trunc(rand01(mix(period, crc32(bin.id))) * ids.length)].replace('Bundles.Bins.', '');
 }
+const BIN_TITLE = { 'Fish Repopulation': 'Fish', 'Global Village': 'Global Village', 'Museum Artifact Hunt': 'Museum' };
 const binSlug = s => s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 function refreshBins(now = Date.now()) {
   DATA.menus.forEach(m => m.cats.forEach(c => {
     if (!Array.isArray(c.bins)) return;
     if (!c._base) c._base = c.items || [];
     c.items = c._base.concat(c.bins.map(b => ({
-      id: c.id + '.bin.' + binSlug(b.name), name: b.effort, badges: [b.name, 'Lv ' + b.lv],
+      id: c.id + '.bin.' + binSlug(b.name), name: `${BIN_TITLE[b.effort] || b.effort} Bin Lv. ${b.lv}`, badges: [b.name],
       needs: b.bundles[binPick(b, now)] || []
     })));
   }));
