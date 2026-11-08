@@ -118,7 +118,7 @@ function refreshBins(now = Date.now()) {
     if (!Array.isArray(c.bins)) return;
     if (!c._base) c._base = c.items || [];
     c.items = c._base.concat(c.bins.map(b => ({
-      id: c.id + '.bin.' + binSlug(b.name), name: b.name, badges: [b.effort, 'Lv ' + b.lv],
+      id: c.id + '.bin.' + binSlug(b.name), name: b.effort, badges: [b.name, 'Lv ' + b.lv],
       needs: b.bundles[binPick(b, now)] || []
     })));
   }));
@@ -363,6 +363,13 @@ function renderChips() {
 }
 
 const CHECK_SVG = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+// smaller places borrow their region's tag colour (Hanging Gardens green, Loftia City blue, Gridfall brick)
+const PLACE_REGION = {
+  'floating-village': 'hanging-gardens', 'central-lake': 'hanging-gardens', 'overgrowth': 'hanging-gardens', 'the-overgrowth': 'hanging-gardens',
+  'the-grove': 'hanging-gardens', 'the-hills': 'hanging-gardens', 'bamboo-forest': 'hanging-gardens', 'secret-lake': 'hanging-gardens',
+  'global-village': 'loftia-city', 'the-park': 'loftia-city', 'scrap-quarter': 'loftia-city',
+  'museum': 'gridfall', 'historical-quarter': 'gridfall', 'concrete-jungle': 'gridfall'
+};
 const CURRENCY = { dew: '💧', bloom: '🌸' };
 const CUR_NAME = { dew: 'Dew', bloom: 'Bloom' };
 const priceRange = p => { const m = String(p).replace(/,/g, '').match(/(\d+)(?:\s*[–-]\s*(\d+))?/); return m ? [+m[1], +(m[2] || m[1])] : [0, 0]; };
@@ -410,7 +417,7 @@ function itemCard(c, it, where) {
     else if (SHOW_AVAILABLE) status = `<div class="qs open">✨ available</div>`;
   }
   if (it.price) status = `<span class="qs price ${d ? 'got' : ''}">${d ? '✓ bought · ' : ''}${CURRENCY[it.cur] || ''} ${esc(it.price)}</span>` + status;
-  if (it.badges && it.badges.length) status = it.badges.map(b => `<span class="qs badge badge-${esc(String(b).toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">${esc(b)}</span>`).join(' ') + status;
+  if (it.badges && it.badges.length) status = it.badges.map(b => { const k = String(b).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); return `<span class="qs badge badge-${esc(k)}${PLACE_REGION[k] ? ' badge-' + PLACE_REGION[k] : ''}">${esc(b)}</span>`; }).join(' ') + status;
   if (it.pick) { const on = it.parts.filter(p => p.on).length; status += `<div class="qs pick">${Math.min(on, it.pick)}/${it.pick} — pick any ${it.pick}</div>`; }
   if (!d && !locked && c.ordered && c.items.find(x => !isDone(c, x)) === it) next = true;
   return `<div class="item ${d ? 'done' : ''} ${it.pinned ? 'pinned' : ''} ${locked ? 'locked' : ''} ${next ? 'next' : ''} ${dots ? 'has-levels' : ''}">${dots}

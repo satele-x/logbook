@@ -186,7 +186,7 @@ select.sort{color:var(--ink)}
 .qs.badge-page-3{background:#ece4ff;color:#6a4fb3}
 /* station levels (recipes) */
 .qs.badge[class*="station-lv-1"]{background:#e6f6ee;color:#2f7d4f}
-.qs.badge[class*="station-lv-2"]{background:#e3f1ff;color:#2b6ea3}
+.qs.badge[class*="station-lv-2"]{background:#ffe6d6;color:#b25a22}
 .qs.badge[class*="station-lv-3"]{background:#ece4ff;color:#6a4fb3}
 /* locations */
 .qs.badge-loftia-city{background:#e0efff;color:#2d6aa8}
@@ -244,7 +244,4 @@ select.sort{color:var(--ink)}
 .savings .progress{width:100%}
 
 /* contribution-bin efforts */
-.qs.badge-fish-repopulation{background:#dcecff;color:#2f6aa6}
-.qs.badge-global-village{background:#ffe9d9;color:#b0602a}
-.qs.badge-museum-artifact-hunt{background:#ece4ff;color:#6a4fb3}
-.qs.badge-lv-1,.qs.badge-lv-2,.qs.badge-lv-3{background:#f3eef7;color:#7d6a8c}
+.qs.badge-lv-1,.qs.badge-lv-2,.qs.badge-lv-3,.qs.badge-underground,.qs.badge-office,.qs.badge-residential{background:#f3eef7;color:#7d6a8c}
