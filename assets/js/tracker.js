@@ -381,7 +381,6 @@ function itemCard(c, it, where) {
     else if (SHOW_AVAILABLE) status = `<div class="qs open">✨ available</div>`;
   }
   if (it.price) status = `<span class="qs price ${d ? 'got' : ''}">${d ? '✓ bought · ' : ''}${CURRENCY[it.cur] || ''} ${esc(it.price)}</span>` + status;
-  else { const tw = shopTwin(it); if (tw) { const got = isDone(tw.c, tw.it); status = `<span class="qs price bp ${got ? 'got' : ''}" title="${got ? 'Blueprint bought' : 'Blueprint from ' + esc(tw.c.name)}">${got ? '✓ blueprint' : `${CURRENCY[tw.it.cur] || ''} ${esc(tw.it.price)} blueprint`}</span>` + status; } }
   if (it.badges && it.badges.length) status = it.badges.map(b => `<span class="qs badge badge-${esc(String(b).toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">${esc(b)}</span>`).join(' ') + status;
   if (it.pick) { const on = it.parts.filter(p => p.on).length; status += `<div class="qs pick">${Math.min(on, it.pick)}/${it.pick} — pick any ${it.pick}</div>`; }
   if (!d && !locked && c.ordered && c.items.find(x => !isDone(c, x)) === it) next = true;
