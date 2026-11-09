@@ -473,6 +473,8 @@ function renderNeeded() {
   const pct = s.t ? Math.round(s.n / s.t * 100) : 0;
   const groups = new Map();
   shown.forEach(p => { if (!groups.has(p.c.id)) groups.set(p.c.id, { m: p.m, c: p.c, items: [] }); groups.get(p.c.id).items.push(p.it); });
+  const po = U.ui.pinOrder || [], rank = id => { const k = po.indexOf(id); return k < 0 ? 1e6 : k; };
+  const grp = [...groups.values()].map((g, k) => [g, k]).sort((a, b) => rank(a[0].c.id) - rank(b[0].c.id) || a[1] - b[1]).map(x => x[0]); // your own section order
   v.innerHTML = `
     <div class="cat-head">
       <h2>📌 Pinned</h2>
@@ -485,7 +487,7 @@ function renderNeeded() {
         <div class="gather-list">${gather.map(g => `<span class="g" title="for: ${esc(g.for.join(', '))}">${esc(g.n)}${g.qtyKnown ? ` <b>×${g.q.toLocaleString('en-US')}</b>` : (g.for.length > 1 ? ` <b>(${g.for.length} bundles)</b>` : '')}</span>`).join('')}</div>
         ${picks.map(pk => `<div class="gather-pick"><b>${esc(pk.name)}:</b> any ${pk.left} more of ${esc(pk.opts.join(', '))}</div>`).join('')}
         <div class="hint">Unticked items from your pinned entries, added up. Tick them off on the cards below as you hand them in.</div></div>` : ''}
-      ${[...groups.values()].map(g => `<div class="grp-h">${esc(g.c.icon)} ${esc(g.c.name)} <span>· ${esc(g.m.name)}</span></div><div class="list">${g.items.map(it => itemCard(g.c, it)).join('')}</div>`).join('') || `<div class="empty"><div class="big">🎉</div>Everything you pinned is done!</div>`}
+      ${grp.length ? `<div class="pin-grps">${grp.map((g, gi) => `<section class="pin-grp" data-cat="${esc(g.c.id)}"><div class="grp-h">${grp.length > 1 ? `<button class="grp-drag" title="Drag to reorder" aria-label="Drag ${esc(g.c.name)} to reorder">⠿</button>` : ''}${esc(g.c.icon)} ${esc(g.c.name)} <span>· ${esc(g.m.name)}</span>${grp.length > 1 ? `<span class="grp-move"><button data-act="grpMove" data-cat="${esc(g.c.id)}" data-dir="-1" ${gi ? '' : 'disabled'} aria-label="Move ${esc(g.c.name)} up">▲</button><button data-act="grpMove" data-cat="${esc(g.c.id)}" data-dir="1" ${gi < grp.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(g.c.name)} down">▼</button></span>` : ''}</div><div class="list">${g.items.map(it => itemCard(g.c, it)).join('')}</div></section>`).join('')}</div>` : ''}${grp.length ? '' : `<div class="empty"><div class="big">🎉</div>Everything you pinned is done!</div>`}
     `}`;
 }
 
@@ -642,6 +644,11 @@ document.addEventListener('click', e => {
   else if (act === 'lvlup' && hit) { const before = isDone(hit.c, hit.it); hit.it.lv = Math.min(hit.it.lv + 1, hit.it.levels.length); afterChange(hit.c, before, isDone(hit.c, hit.it), t, hit.it); }
   else if (act === 'lvl' && hit) { const before = isDone(hit.c, hit.it), i = +t.dataset.i; hit.it.lv = hit.it.lv === i + 1 ? i : i + 1; afterChange(hit.c, before, isDone(hit.c, hit.it), t, hit.it); }
   else if (act === 'pip' && hit) { const before = isDone(hit.c, hit.it), i = +t.dataset.i; hit.it.pips[i] = !hit.it.pips[i]; afterChange(hit.c, before, isDone(hit.c, hit.it), t, hit.it); }
+  else if (act === 'grpMove') {
+    const ids = [...document.querySelectorAll('.pin-grps > .pin-grp')].map(x => x.dataset.cat), i = ids.indexOf(t.dataset.cat), j = i + +t.dataset.dir;
+    if (i < 0 || j < 0 || j >= ids.length) return;
+    [ids[i], ids[j]] = [ids[j], ids[i]]; savePinOrder(ids);
+  }
   else if (act === 'turnin' && hit) {
     const before = isDone(hit.c, hit.it);
     if (hit.it.turned) hit.it.turned = false; else { hit.it.turned = true; hit.it.parts.forEach(p => { p.on = true; }); }
@@ -678,6 +685,36 @@ function afterChange(c, before, after, el, it) {
     if (all) setTimeout(() => { burst(innerWidth / 2, innerHeight / 3, 26); toast(`🎉 ${c.name} complete!`); }, 150);
   }
 }
+/* drag the sections on the Pinned page into your own order */
+function savePinOrder(ids) {
+  const keep = (U.ui.pinOrder || []).filter(id => !ids.includes(id)); // remember sections that aren't pinned right now too
+  U.ui.pinOrder = ids.concat(keep); save(); renderCat();
+}
+let grpDrag = null;
+document.addEventListener('pointerdown', e => {
+  const h = e.target.closest('.grp-drag'); if (!h) return;
+  e.preventDefault();
+  const wrap = h.closest('.pin-grps'), sec = h.closest('.pin-grp');
+  wrap.classList.add('reordering'); sec.classList.add('dragging');
+  grpDrag = { wrap, sec, id: e.pointerId };
+  try { h.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+});
+document.addEventListener('pointermove', e => {
+  if (!grpDrag || e.pointerId !== grpDrag.id) return;
+  e.preventDefault();
+  const others = [...grpDrag.wrap.children].filter(x => x !== grpDrag.sec);
+  const before = others.find(x => { const r = x.getBoundingClientRect(); return e.clientY < r.top + r.height / 2; });
+  if (before) { if (grpDrag.sec.nextElementSibling !== before) grpDrag.wrap.insertBefore(grpDrag.sec, before); }
+  else if (grpDrag.wrap.lastElementChild !== grpDrag.sec) grpDrag.wrap.appendChild(grpDrag.sec);
+});
+const endGrpDrag = e => {
+  if (!grpDrag || e.pointerId !== grpDrag.id) return;
+  const ids = [...grpDrag.wrap.children].map(x => x.dataset.cat);
+  grpDrag.wrap.classList.remove('reordering'); grpDrag.sec.classList.remove('dragging'); grpDrag = null;
+  savePinOrder(ids); toast('order saved ✨');
+};
+document.addEventListener('pointerup', endGrpDrag);
+document.addEventListener('pointercancel', endGrpDrag);
 document.addEventListener('input', e => {
   if (e.target.id === 'q') { U.ui.q = e.target.value; const pos = e.target.selectionStart; renderCat(); const q = $('#q'); q.focus(); q.setSelectionRange(pos, pos); }
 });

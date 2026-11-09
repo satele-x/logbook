@@ -253,3 +253,16 @@ select.sort{color:var(--ink)}
 .turnin.done{background:#e6f6ee;color:#2f7d4f;border:2px solid #b9e4cd}
 @keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
 @media (prefers-reduced-motion:reduce){.turnin.ready{animation:none}}
+
+/* reorder sections on the Pinned page */
+.pin-grp .grp-h{display:flex;align-items:center;gap:6px}
+.grp-drag{cursor:grab;touch-action:none;font-size:18px;line-height:1;padding:4px 6px;border-radius:8px;color:#b4a5bf;user-select:none}
+.grp-drag:hover{background:#f3eef7;color:var(--ink)}
+.grp-move{margin-left:auto;display:flex;gap:4px}
+.grp-move button{width:26px;height:26px;border-radius:8px;font-size:11px;color:#9a8aa8;background:#f6f1f9}
+.grp-move button:hover:not(:disabled){background:#ece4ff;color:var(--ink)}
+.grp-move button:disabled{opacity:.3;cursor:default}
+.pin-grps.reordering .pin-grp .list{display:none}
+.pin-grps.reordering .pin-grp{border:2px dashed #e6d8ee;border-radius:14px;margin:6px 0;padding:0 8px;background:#ffffff80}
+.pin-grps.reordering .pin-grp.dragging{border-color:var(--pink);background:#fff0f6;box-shadow:0 6px 18px #b48fc533}
+.pin-grps.reordering .grp-drag{cursor:grabbing}
