@@ -106,6 +106,6 @@ html[data-theme="dusk"] .hero h1,html[data-theme="dusk"] .title-block h1{filter:
 html[data-theme="dusk"] .turnin{background:#3a3158;color:#a79cc0;border-color:#5a4f80}
 html[data-theme="dusk"] .turnin.ready{background:#4a3a24;color:#ffd08a;border-color:#8a6a3a;box-shadow:0 3px 0 #2a2010}
 html[data-theme="dusk"] .turnin.done{background:#233a37;color:#8fd6b4;border-color:#2f5249}
-html[data-theme="dusk"] .grp-drag:hover,html[data-theme="dusk"] .grp-move button{background:#352d50}
-html[data-theme="dusk"] .pin-grps.reordering .pin-grp{background:#2a244280;border-color:#4a4070}
-html[data-theme="dusk"] .pin-grps.reordering .pin-grp.dragging{background:#43293d;border-color:#c45a8c}
+html[data-theme="dusk"] .grp-move button{background:#352d50}
+html[data-theme="dusk"] .gather-list .g.cook{background:#43303a;box-shadow:0 2px 0 #1a1530}
+html[data-theme="dusk"] .turnin.again{background:#3b3266;color:#c9b6ff;border-color:#5a4f80}

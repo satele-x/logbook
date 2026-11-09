@@ -176,7 +176,7 @@ function buildState() {
     m.cats.forEach(c => {
       if (U.hidden.cats[c.id]) return;
       const co = U.cats[c.id] || {};
-      const C = { id: c.id, official: true, name: co.name || c.name, icon: co.icon || c.icon, note: c.note || '', pipLabels: c.tags || [], ordered: !!c.ordered, currency: c.currency || '', turnIn: !!c.turnIn,
+      const C = { id: c.id, official: true, name: co.name || c.name, icon: co.icon || c.icon, note: c.note || '', pipLabels: c.tags || [], ordered: !!c.ordered, currency: c.currency || '', turnIn: !!c.turnIn, dishes: !!c.dishes, repeat: !!c.repeat,
         reset: co.reset !== undefined ? co.reset : (c.reset || ''),
         // server resets are stored in UTC in the data file so they're right in every timezone
         resetUtcHour: (co.resetHour == null && co.reset === undefined && c.resetUtcHour != null) ? c.resetUtcHour : null,
@@ -257,7 +257,13 @@ function save() {
   catch (e) { if (!saveFail) toast("⚠️ couldn't save — browser storage may be full"); saveFail = true; setPill('⚠️ not saved'); }
 }
 function setPill(t) { const p = $('#savePill'); if (p) p.textContent = t; }
-function rebuild() { state = buildState(); indexTwins(); }
+function rebuild() { state = buildState(); indexTwins(); indexDishes(); }
+// dishes you cook (categories marked "dishes": true) — Pinned breaks them down into their ingredients
+let DISHES = new Map();
+function indexDishes() {
+  DISHES = new Map();
+  state.menus.forEach(m => m.cats.forEach(c => { if (c.dishes) c.items.forEach(it => { if (it.parts.length && !DISHES.has(it.name.toLowerCase())) DISHES.set(it.name.toLowerCase(), { c, it }); }); }));
+}
 // shop blueprints <-> the recipe that crafts them share a name: they act as one wish
 let TWINS = new Map();
 function indexTwins() {
@@ -431,6 +437,7 @@ function itemCard(c, it, where) {
     const lbl = it.turned ? '✓ turned in' : ready ? '📦 turn in' : 'turn in';
     tags += `<button class="turnin ${it.turned ? 'done' : ready ? 'ready' : ''}" data-act="turnin" data-id="${esc(it.id)}" aria-pressed="${it.turned}" title="${it.turned ? 'Undo — not handed in yet' : ready ? 'Got everything — mark it handed in' : 'Mark it handed in (ticks every item too)'}">${lbl}</button>`;
   }
+  if (c.repeat && d && it.parts.length) tags += `<button class="turnin again" data-act="again" data-id="${esc(it.id)}" title="Untick the ingredients so you can make it again">🔁 make again</button>`;
   if (!d && !locked && c.ordered && c.items.find(x => !isDone(c, x)) === it) next = true;
   return `<div class="item ${d ? 'done' : ''} ${it.pinned ? 'pinned' : ''} ${locked ? 'locked' : ''} ${next ? 'next' : ''} ${dots ? 'has-levels' : ''}">${dots}
     ${next ? '<span class="next-badge">▶ next up</span>' : ''}
@@ -448,7 +455,7 @@ function itemCard(c, it, where) {
 function renderNeeded() {
   const v = $('#catView'), pins = allPinned(), hide = U.ui.hideDone;
   const shown = pins.filter(p => !hide || !isDone(p.c, p.it));
-  const tally = new Map();
+  const tally = new Map(), make = new Map();
   const picks = [];
   pins.forEach(({ it }) => {
     if (it.levels.length) {
@@ -464,10 +471,18 @@ function renderNeeded() {
     it.parts.forEach(p => {
       if (p.on) return;
       const [n, q] = splitQty(p.label), k = n.toLowerCase();
+      // a dish (e.g. a bin wants Fries) can't be gathered — list it to cook and gather its ingredients instead
+      const r = DISHES.get(k);
+      if (r && r.it !== it) {
+        const mk = make.get(k) || { n, q: 0, c: r.c, it: r.it, for: [] }; mk.q += q; mk.for.push(it.name); make.set(k, mk);
+        if (!r.it.pinned) r.it.parts.forEach(rp => { const [rn, rq] = splitQty(rp.label), rk = rn.toLowerCase(); const t = tally.get(rk) || { n: rn, q: 0, qtyKnown: true, for: [] }; t.q += rq * q; t.for.push(`${n} (${it.name})`); tally.set(rk, t); });
+        return;
+      }
       const t = tally.get(k) || { n, q: 0, qtyKnown: /[×x]\s*\d+\s*$/i.test(p.label), for: [] };
       t.q += q; t.for.push(it.name); tally.set(k, t);
     });
   });
+  const cook = [...make.values()];
   const gather = [...tally.values()].sort((a, b) => a.n.localeCompare(b.n));
   const s = pins.reduce((a, p) => { const u = units(p.c, p.it); a.n += u[0]; a.t += u[1]; return a; }, { n: 0, t: 0 });
   const pct = s.t ? Math.round(s.n / s.t * 100) : 0;
@@ -486,8 +501,9 @@ function renderNeeded() {
       ${gather.length || picks.length ? `<div class="gather"><div class="gather-h">🧺 Stuff to gather <span>${gather.length + picks.length} thing${gather.length + picks.length === 1 ? '' : 's'}</span></div>
         <div class="gather-list">${gather.map(g => `<span class="g" title="for: ${esc(g.for.join(', '))}">${esc(g.n)}${g.qtyKnown ? ` <b>×${g.q.toLocaleString('en-US')}</b>` : (g.for.length > 1 ? ` <b>(${g.for.length} bundles)</b>` : '')}</span>`).join('')}</div>
         ${picks.map(pk => `<div class="gather-pick"><b>${esc(pk.name)}:</b> any ${pk.left} more of ${esc(pk.opts.join(', '))}</div>`).join('')}
+        ${cook.length ? `<div class="cook-h">🍳 Cook first <span>ingredients are already in the list above</span></div><div class="gather-list">${cook.map(m => { const lv = (m.it.badges || []).find(b => /Lv/.test(b)); return `<span class="g cook" title="${esc(m.it.parts.map(x => x.label).join(', '))} · for: ${esc(m.for.join(', '))}">${esc(m.n)} <b>×${m.q}</b>${lv ? `<i>${esc(lv.replace(/^.*?(Lv\.? ?\d)/, '$1'))}</i>` : ''}</span>`; }).join('')}</div>` : ''}
         <div class="hint">Unticked items from your pinned entries, added up. Tick them off on the cards below as you hand them in.</div></div>` : ''}
-      ${grp.length ? `<div class="pin-grps">${grp.map((g, gi) => `<section class="pin-grp" data-cat="${esc(g.c.id)}"><div class="grp-h">${grp.length > 1 ? `<button class="grp-drag" title="Drag to reorder" aria-label="Drag ${esc(g.c.name)} to reorder">⠿</button>` : ''}${esc(g.c.icon)} ${esc(g.c.name)} <span>· ${esc(g.m.name)}</span>${grp.length > 1 ? `<span class="grp-move"><button data-act="grpMove" data-cat="${esc(g.c.id)}" data-dir="-1" ${gi ? '' : 'disabled'} aria-label="Move ${esc(g.c.name)} up">▲</button><button data-act="grpMove" data-cat="${esc(g.c.id)}" data-dir="1" ${gi < grp.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(g.c.name)} down">▼</button></span>` : ''}</div><div class="list">${g.items.map(it => itemCard(g.c, it)).join('')}</div></section>`).join('')}</div>` : ''}${grp.length ? '' : `<div class="empty"><div class="big">🎉</div>Everything you pinned is done!</div>`}
+      ${grp.length ? `<div class="pin-grps">${grp.map((g, gi) => `<section class="pin-grp" data-cat="${esc(g.c.id)}"><div class="grp-h">${esc(g.c.icon)} ${esc(g.c.name)} <span>· ${esc(g.m.name)}</span>${grp.length > 1 ? `<span class="grp-move"><button data-act="grpMove" data-cat="${esc(g.c.id)}" data-dir="-1" ${gi ? '' : 'disabled'} aria-label="Move ${esc(g.c.name)} up">▲</button><button data-act="grpMove" data-cat="${esc(g.c.id)}" data-dir="1" ${gi < grp.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(g.c.name)} down">▼</button></span>` : ''}</div><div class="list">${g.items.map(it => itemCard(g.c, it)).join('')}</div></section>`).join('')}</div>` : ''}${grp.length ? '' : `<div class="empty"><div class="big">🎉</div>Everything you pinned is done!</div>`}
     `}`;
 }
 
@@ -649,6 +665,7 @@ document.addEventListener('click', e => {
     if (i < 0 || j < 0 || j >= ids.length) return;
     [ids[i], ids[j]] = [ids[j], ids[i]]; savePinOrder(ids);
   }
+  else if (act === 'again' && hit) { setAll(hit.c, hit.it, false); save(); render(); toast(`🔁 ready to make ${hit.it.name} again`); }
   else if (act === 'turnin' && hit) {
     const before = isDone(hit.c, hit.it);
     if (hit.it.turned) hit.it.turned = false; else { hit.it.turned = true; hit.it.parts.forEach(p => { p.on = true; }); }
@@ -685,36 +702,11 @@ function afterChange(c, before, after, el, it) {
     if (all) setTimeout(() => { burst(innerWidth / 2, innerHeight / 3, 26); toast(`🎉 ${c.name} complete!`); }, 150);
   }
 }
-/* drag the sections on the Pinned page into your own order */
+/* put the sections on the Pinned page in your own order (▲ ▼) */
 function savePinOrder(ids) {
   const keep = (U.ui.pinOrder || []).filter(id => !ids.includes(id)); // remember sections that aren't pinned right now too
   U.ui.pinOrder = ids.concat(keep); save(); renderCat();
 }
-let grpDrag = null;
-document.addEventListener('pointerdown', e => {
-  const h = e.target.closest('.grp-drag'); if (!h) return;
-  e.preventDefault();
-  const wrap = h.closest('.pin-grps'), sec = h.closest('.pin-grp');
-  wrap.classList.add('reordering'); sec.classList.add('dragging');
-  grpDrag = { wrap, sec, id: e.pointerId };
-  try { h.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
-});
-document.addEventListener('pointermove', e => {
-  if (!grpDrag || e.pointerId !== grpDrag.id) return;
-  e.preventDefault();
-  const others = [...grpDrag.wrap.children].filter(x => x !== grpDrag.sec);
-  const before = others.find(x => { const r = x.getBoundingClientRect(); return e.clientY < r.top + r.height / 2; });
-  if (before) { if (grpDrag.sec.nextElementSibling !== before) grpDrag.wrap.insertBefore(grpDrag.sec, before); }
-  else if (grpDrag.wrap.lastElementChild !== grpDrag.sec) grpDrag.wrap.appendChild(grpDrag.sec);
-});
-const endGrpDrag = e => {
-  if (!grpDrag || e.pointerId !== grpDrag.id) return;
-  const ids = [...grpDrag.wrap.children].map(x => x.dataset.cat);
-  grpDrag.wrap.classList.remove('reordering'); grpDrag.sec.classList.remove('dragging'); grpDrag = null;
-  savePinOrder(ids); toast('order saved ✨');
-};
-document.addEventListener('pointerup', endGrpDrag);
-document.addEventListener('pointercancel', endGrpDrag);
 document.addEventListener('input', e => {
   if (e.target.id === 'q') { U.ui.q = e.target.value; const pos = e.target.selectionStart; renderCat(); const q = $('#q'); q.focus(); q.setSelectionRange(pos, pos); }
 });

@@ -1,7 +1,7 @@
 {
   "game": "loftia",
   "name": "Loftia",
-  "version": "2026.11.09b",
+  "version": "2026.11.09c",
   "updated": "2026-11-06",
   "gameVersion": "Early Access",
   "sources": [{"name":"Loftia Codex","url":"https://loftiacodex.com/"},{"name":"Cluefile recipes","url":"https://cluefile.com/loftia/data/recipes/"},{"name":"Loftians inspiration guide","url":"https://loftians.com/guides/loftia-inspiration-guide/"},{"name":"Wikily fish list","url":"https://wikily.gg/loftia/fish"}],
@@ -179,7 +179,7 @@
       ]}
     ]},
     { "id": "recipes", "name": "Recipes", "icon": "📖", "color": 0, "cats": [
-      { "id": "recipes.project-station", "name": "Project Station", "icon": "🛠️", "items": [
+      { "id": "recipes.project-station", "name": "Project Station", "icon": "🛠️", "repeat": true, "items": [
         {"id":"recipes.project-station.1x1-garden-bed","name":"1x1 Garden Bed","badges":["Project Station Lv. 2"],"needs":["Clay ×3","Scrap Wood ×5"]},
         {"id":"recipes.project-station.2x2-garden-bed","name":"2x2 Garden Bed","badges":["Project Station Lv. 1"],"needs":["Clay ×5","Scrap Wood ×10"]},
         {"id":"recipes.project-station.3x3-garden-bed","name":"3x3 Garden Bed","badges":["Project Station Lv. 2"],"needs":["Clay ×10","Scrap Wood ×15"]},
@@ -240,7 +240,7 @@
         {"id":"recipes.project-station.trowel","name":"Trowel","badges":["Project Station Lv. 2"],"after":"Root Veggies","needs":["Aluminium Bar ×2","Bamboo ×10"]},
         {"id":"recipes.project-station.watering-can","name":"Watering Can","badges":["Project Station Lv. 1"],"needs":["Plastic Discards ×5","Metal Scraps ×5"]}
       ]},
-      { "id": "recipes.refining", "name": "Refining", "icon": "⚗️", "items": [
+      { "id": "recipes.refining", "name": "Refining", "icon": "⚗️", "repeat": true, "items": [
         {"id":"recipes.refining.plank","name":"Plank","badges":["Refining Station Lv. 1"],"needs":["Scrap Wood ×5"]},
         {"id":"recipes.refining.metal-plate","name":"Metal Plate","badges":["Refining Station Lv. 1"],"needs":["Metal Scraps ×5"]},
         {"id":"recipes.refining.straw","name":"Straw","badges":["Refining Station Lv. 1"],"needs":["Plant Fiber ×5"]},
@@ -269,7 +269,7 @@
         {"id":"recipes.refining.seaweed-leather","name":"Seaweed Leather","badges":["Refining Station Lv. 3"],"needs":["Algae ×5"]},
         {"id":"recipes.refining.upcycled-fabric","name":"Upcycled Fabric","badges":["Refining Station Lv. 3"],"needs":["Fabric Scraps ×5"]}
       ]},
-      { "id": "recipes.cooking", "name": "Cooking", "icon": "🍳", "items": [
+      { "id": "recipes.cooking", "name": "Cooking", "icon": "🍳", "repeat": true, "dishes": true, "items": [
         {"id":"recipes.cooking.baba-ganoush","name":"Baba Ganoush","badges":["Cooking Station Lv. 3"],"needs":["Eggplant ×1","Garlic ×1","Cumin ×1"]},
         {"id":"recipes.cooking.banana-curry","name":"Banana Curry","badges":["Cooking Station Lv. 2"],"needs":["Banana ×1","Coconut ×1","Onion ×1"]},
         {"id":"recipes.cooking.banana-pudding","name":"Banana Pudding","badges":["Cooking Station Lv. 2"],"needs":["Banana ×2","Milk ×1"]},
@@ -332,7 +332,7 @@
         {"id":"recipes.cooking.waffles","name":"Waffles","badges":["Cooking Station Lv. 2"],"needs":["Wheat ×2","Wild Berries ×2","Butter ×1"]},
         {"id":"recipes.cooking.winter-soup","name":"Winter Soup","badges":["Cooking Station Lv. 3"],"needs":["Portobello Mushrooms ×1","Potato ×1","Basil ×1"]}
       ]},
-      { "id": "recipes.tailoring", "name": "Tailoring", "icon": "🧵", "items": [
+      { "id": "recipes.tailoring", "name": "Tailoring", "icon": "🧵", "repeat": true, "items": [
         {"id":"recipes.tailoring.cottage-hat","name":"Cottage Hat","badges":["Tailoring Station Lv. 1"],"needs":["Plant Fiber ×5"]},
         {"id":"recipes.tailoring.goth-beanie","name":"Goth Beanie","badges":["Tailoring Station Lv. 1"],"needs":["Cotton ×3","Tire ×2"]},
         {"id":"recipes.tailoring.city-chic-hat","name":"City Chic Hat","badges":["Tailoring Station Lv. 1"],"needs":["Cotton ×2","Metal Scraps ×4"]},
@@ -567,7 +567,7 @@
         {"id":"recipes.tailoring.flower-power-glasses","name":"Flower Power Glasses","badges":["Tailoring Station Lv. 2"],"needs":["Copper Bar ×50","Rattan ×75","Bloom ×50"]},
         {"id":"recipes.tailoring.eclipse-glasses","name":"Eclipse Glasses","badges":["Tailoring Station Lv. 3"],"needs":["Glass ×50","Rusted Metal ×75","Bloom ×50"]}
       ]},
-      { "id": "recipes.carpentry", "name": "Carpentry", "icon": "🪚", "items": [
+      { "id": "recipes.carpentry", "name": "Carpentry", "icon": "🪚", "repeat": true, "items": [
         {"id":"recipes.carpentry.basic-bed","name":"Basic Bed","badges":["Carpentry Station Lv. 1"],"needs":["Scrap Wood ×4","Metal Scraps ×4"]},
         {"id":"recipes.carpentry.basic-couch","name":"Basic Couch","badges":["Carpentry Station Lv. 1"],"needs":["Scrap Wood ×6","Metal Scraps ×4"]},
         {"id":"recipes.carpentry.basic-bookshelf","name":"Basic Bookshelf","badges":["Carpentry Station Lv. 1"],"needs":["Scrap Wood ×8","Screws ×4"]},
@@ -1340,11 +1340,6 @@
         {"id":"collections.datapads.the-lore-we-lost","name":"The Lore We Lost.","badges":["Gridfall"]},
         {"id":"collections.datapads.a-painted-mystery","name":"A Painted Mystery","badges":["Gridfall"]},
         {"id":"collections.datapads.traveling-in-style","name":"Traveling in Style","badges":["Gridfall"]}
-      ]},
-      { "id": "collections.memories", "name": "Memories", "icon": "💭", "items": [
-        {"id":"collections.memories.amateur-fisher","name":"Amateur Fisher"},
-        {"id":"collections.memories.expert-fisher","name":"Expert Fisher"},
-        {"id":"collections.memories.bloom-bug","name":"Bloom Bug"}
       ]}
     ]},
     { "id": "pets", "name": "Pets", "icon": "🐱", "color": 0, "cats": [
