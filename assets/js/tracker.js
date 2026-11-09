@@ -149,6 +149,8 @@ function mergeItem(it, C) {
     parts: (it.needs || []).map(l => ({ label: l, on: !!(p.parts && p.parts[partKey(l)]) || (!!p.d && !p.parts) })),
     pips: C.pipLabels.map((_, i) => !!(p.p && p.p[i])),
     done: (it.needs && it.needs.length) ? false : !!p.d, pinned: !!p.pin, fav: !!p.fav,
+    // before turn-in existed, fully gathered meant finished — so count those as handed in
+    turned: p.ti != null ? !!p.ti : !!(C.turnIn && it.needs && it.needs.length && it.needs.every(l => (p.parts && p.parts[partKey(l)]) || (p.d && !p.parts))),
     pick: it.pick && it.needs && it.pick < it.needs.length ? it.pick : 0,  // "any N of these"
     badges: Array.isArray(it.badges) ? it.badges : [],
     price: it.price != null ? String(it.price) : '', cur: (it.cur || C.currency || 'dew').toLowerCase(),
@@ -174,7 +176,7 @@ function buildState() {
     m.cats.forEach(c => {
       if (U.hidden.cats[c.id]) return;
       const co = U.cats[c.id] || {};
-      const C = { id: c.id, official: true, name: co.name || c.name, icon: co.icon || c.icon, note: c.note || '', pipLabels: c.tags || [], ordered: !!c.ordered, currency: c.currency || '',
+      const C = { id: c.id, official: true, name: co.name || c.name, icon: co.icon || c.icon, note: c.note || '', pipLabels: c.tags || [], ordered: !!c.ordered, currency: c.currency || '', turnIn: !!c.turnIn,
         reset: co.reset !== undefined ? co.reset : (c.reset || ''),
         // server resets are stored in UTC in the data file so they're right in every timezone
         resetUtcHour: (co.resetHour == null && co.reset === undefined && c.resetUtcHour != null) ? c.resetUtcHour : null,
@@ -224,6 +226,7 @@ function persist() {
         if (!I.official) { (custom.items[C.id] = custom.items[C.id] || []).push(stripItem(I)); return; }
         const p = {};
         if (I.done) p.d = 1;
+        if (I.turned) p.ti = 1; else if (C.turnIn && I.parts.length && I.parts.every(pt => pt.on)) p.ti = 0; // remembered 'not yet'
         if (I.pinned) p.pin = 1;
         if (I.fav) p.fav = 1;
         if (I.levels.length && I.lv !== (I.startLv || 0)) p.lv = I.lv;
@@ -282,8 +285,11 @@ function curCat() {
   if (!c) { c = m.cats[0]; U.ui.cat[m.id] = c.id; }
   return c;
 }
+// "turn in" lists (dailies, inspirations): gathering everything isn't the finish line — handing it in is
+const needsTurnIn = (c, it) => !!(c.turnIn && it.official && it.parts.length);
 function units(c, it) {
   if (it.levels && it.levels.length) return [it.lv, it.levels.length];
+  if (needsTurnIn(c, it)) return [it.turned ? 1 : 0, 1];
   if (it.parts.length) { const on = it.parts.filter(p => p.on).length, need = it.pick || it.parts.length; return [Math.min(on, need), need]; }
   if (c.pipLabels.length) return [c.pipLabels.filter((_, i) => it.pips[i]).length, c.pipLabels.length];
   return [it.done ? 1 : 0, 1];
@@ -291,7 +297,7 @@ function units(c, it) {
 const isDone = (c, it) => { const u = units(c, it); return u[0] === u[1]; };
 function setAll(c, it, val) {
   if (it.levels && it.levels.length) { it.lv = val ? it.levels.length : 0; return; }
-  if (it.parts.length) it.parts.forEach(p => { p.on = val; });
+  if (it.parts.length) { it.parts.forEach(p => { p.on = val; }); if (needsTurnIn(c, it)) it.turned = val; }
   else if (c.pipLabels.length) it.pips = c.pipLabels.map(() => val);
   else it.done = val;
 }
@@ -420,6 +426,11 @@ function itemCard(c, it, where) {
   if (it.price) status = `<span class="qs price ${d ? 'got' : ''}">${d ? '✓ bought · ' : ''}${CURRENCY[it.cur] || ''} ${esc(it.price)}</span>` + status;
   if (it.badges && it.badges.length) status = it.badges.map(b => { const k = String(b).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); return `<span class="qs badge badge-${esc(k)}${PLACE_REGION[k] ? ' badge-' + PLACE_REGION[k] : ''}">${esc(b)}</span>`; }).join(' ') + status;
   if (it.pick) { const on = it.parts.filter(p => p.on).length; status += `<div class="qs pick">${Math.min(on, it.pick)}/${it.pick} — pick any ${it.pick}</div>`; }
+  if (needsTurnIn(c, it)) {
+    const ready = it.parts.every(p => p.on);
+    const lbl = it.turned ? '✓ turned in' : ready ? '📦 turn in' : 'turn in';
+    tags += `<button class="turnin ${it.turned ? 'done' : ready ? 'ready' : ''}" data-act="turnin" data-id="${esc(it.id)}" aria-pressed="${it.turned}" title="${it.turned ? 'Undo — not handed in yet' : ready ? 'Got everything — mark it handed in' : 'Mark it handed in (ticks every item too)'}">${lbl}</button>`;
+  }
   if (!d && !locked && c.ordered && c.items.find(x => !isDone(c, x)) === it) next = true;
   return `<div class="item ${d ? 'done' : ''} ${it.pinned ? 'pinned' : ''} ${locked ? 'locked' : ''} ${next ? 'next' : ''} ${dots ? 'has-levels' : ''}">${dots}
     ${next ? '<span class="next-badge">▶ next up</span>' : ''}
@@ -624,12 +635,18 @@ document.addEventListener('click', e => {
   else if (act === 'toggle' && hit) {
     const before = isDone(hit.c, hit.it);
     if (hit.it.levels.length) hit.it.lv = before ? 0 : hit.it.lv + 1; // tiered: each tick climbs one tier
+    else if (needsTurnIn(hit.c, hit.it) && before) hit.it.turned = false; // untick = not handed in yet (keeps what you gathered)
     else setAll(hit.c, hit.it, !before);
     afterChange(hit.c, before, isDone(hit.c, hit.it), t, hit.it);
   }
   else if (act === 'lvlup' && hit) { const before = isDone(hit.c, hit.it); hit.it.lv = Math.min(hit.it.lv + 1, hit.it.levels.length); afterChange(hit.c, before, isDone(hit.c, hit.it), t, hit.it); }
   else if (act === 'lvl' && hit) { const before = isDone(hit.c, hit.it), i = +t.dataset.i; hit.it.lv = hit.it.lv === i + 1 ? i : i + 1; afterChange(hit.c, before, isDone(hit.c, hit.it), t, hit.it); }
   else if (act === 'pip' && hit) { const before = isDone(hit.c, hit.it), i = +t.dataset.i; hit.it.pips[i] = !hit.it.pips[i]; afterChange(hit.c, before, isDone(hit.c, hit.it), t, hit.it); }
+  else if (act === 'turnin' && hit) {
+    const before = isDone(hit.c, hit.it);
+    if (hit.it.turned) hit.it.turned = false; else { hit.it.turned = true; hit.it.parts.forEach(p => { p.on = true; }); }
+    afterChange(hit.c, before, isDone(hit.c, hit.it), t, hit.it);
+  }
   else if (act === 'part' && hit) { const before = isDone(hit.c, hit.it), p = hit.it.parts[+t.dataset.i]; p.on = !p.on; afterChange(hit.c, before, isDone(hit.c, hit.it), t, hit.it); }
   else if (act === 'fav' && hit) {
     const on = !hit.it.fav; hit.it.fav = on;
