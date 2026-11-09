@@ -151,6 +151,7 @@ function mergeItem(it, C) {
     done: (it.needs && it.needs.length) ? false : !!p.d, pinned: !!p.pin, fav: !!p.fav,
     // before turn-in existed, fully gathered meant finished — so count those as handed in
     turned: p.ti != null ? !!p.ti : !!(C.turnIn && it.needs && it.needs.length && it.needs.every(l => (p.parts && p.parts[partKey(l)]) || (p.d && !p.parts))),
+    once: !!it.once, // tools & upgrades you only ever craft once — no "make again"
     pick: it.pick && it.needs && it.pick < it.needs.length ? it.pick : 0,  // "any N of these"
     badges: Array.isArray(it.badges) ? it.badges : [],
     price: it.price != null ? String(it.price) : '', cur: (it.cur || C.currency || 'dew').toLowerCase(),
@@ -357,7 +358,7 @@ function renderTabs() {
   const pins = allPinned(), left = pins.filter(p => !isDone(p.c, p.it)).length;
   const h = state.menus.map(m => {
     const s = menuStats(m), col = MENU_COLORS[(m.color || 0) % MENU_COLORS.length];
-    return `<button class="tab ${!isSpecial() && m.id === curMenu().id ? 'on' : ''}" style="--tabc:${col[0]};--tabd:${col[1]}" data-act="menu" data-id="${esc(m.id)}"><span>${esc(m.icon)}</span>${esc(m.name)}<span class="cnt">${s.n}/${s.t}</span></button>`;
+    return `<button class="tab ${!isSpecial() && m.id === curMenu().id ? 'on' : ''}" style="--tabc:${col[0]};--tabd:${col[1]}" data-act="menu" data-id="${esc(m.id)}"><span>${esc(m.icon)}</span>${esc(m.name)}<span class="cnt">${m.cats.length && m.cats.every(x => x.repeat) ? s.t : `${s.n}/${s.t}`}</span></button>`;
   }).join('');
   const tabs = $('#tabs');
   tabs.innerHTML = `<button class="tab ${isNeeded() ? 'on' : ''}" style="--tabc:#ffb3c8;--tabd:#ef7f9f" data-act="menu" data-id="needed"><span>📌</span>Pinned<span class="cnt">${left}</span></button><button class="tab ${isWish() ? 'on' : ''}" style="--tabc:#ffc4dc;--tabd:#e9719f" data-act="menu" data-id="wish"><span>💝</span>Wishlist<span class="cnt">${wishGoals().filter(g => !g.done).length}</span></button>` + h + `<button class="tab add" data-act="addMenu">＋ new menu</button>`;
@@ -370,8 +371,8 @@ function renderChips() {
   el.style.display = '';
   const m = curMenu(), c = curCat();
   el.innerHTML = m.cats.map(x => {
-    const s = catStats(x), all = s.items > 0 && s.full === s.items;
-    return `<button class="chip ${c && x.id === c.id ? 'on' : ''} ${all ? 'done-all' : ''}" data-act="cat" data-id="${esc(x.id)}"><span>${esc(x.icon)}</span>${esc(x.name)}<span class="mini">${all ? '✓ ' : ''}${s.full}/${s.items}</span></button>`;
+    const s = catStats(x), all = !x.repeat && s.items > 0 && s.full === s.items;
+    return `<button class="chip ${c && x.id === c.id ? 'on' : ''} ${all ? 'done-all' : ''}" data-act="cat" data-id="${esc(x.id)}"><span>${esc(x.icon)}</span>${esc(x.name)}<span class="mini">${x.repeat ? s.items : `${all ? '✓ ' : ''}${s.full}/${s.items}`}</span></button>`;
   }).join('') + `<button class="chip add" data-act="addCat">＋ add category</button>`;
 }
 
@@ -437,7 +438,7 @@ function itemCard(c, it, where) {
     const lbl = it.turned ? '✓ turned in' : ready ? '📦 turn in' : 'turn in';
     tags += `<button class="turnin ${it.turned ? 'done' : ready ? 'ready' : ''}" data-act="turnin" data-id="${esc(it.id)}" aria-pressed="${it.turned}" title="${it.turned ? 'Undo — not handed in yet' : ready ? 'Got everything — mark it handed in' : 'Mark it handed in (ticks every item too)'}">${lbl}</button>`;
   }
-  if (c.repeat && d && it.parts.length) tags += `<button class="turnin again" data-act="again" data-id="${esc(it.id)}" title="Untick the ingredients so you can make it again">🔁 make again</button>`;
+  if (c.repeat && !it.once && d && it.parts.length) tags += `<button class="turnin again" data-act="again" data-id="${esc(it.id)}" title="Untick the ingredients so you can make it again">🔁 make again</button>`;
   if (!d && !locked && c.ordered && c.items.find(x => !isDone(c, x)) === it) next = true;
   return `<div class="item ${d ? 'done' : ''} ${it.pinned ? 'pinned' : ''} ${locked ? 'locked' : ''} ${next ? 'next' : ''} ${dots ? 'has-levels' : ''}">${dots}
     ${next ? '<span class="next-badge">▶ next up</span>' : ''}
@@ -595,7 +596,7 @@ function renderCat() {
   v.innerHTML = `
     <div class="cat-head">
       <h2>${esc(c.icon)} ${esc(c.name)}${c.reset ? `<span class="reset-pill" title="Ticks clear automatically">🔁 resets in ${fmtLeft(nextBoundary(c, Date.now()) - Date.now())}</span>` : ''}</h2>
-      <div class="progress"><div class="bar"><i style="width:${pct}%"></i></div><span class="pct">${s.n}/${s.total} · ${pct}%</span></div>
+      ${c.repeat ? `<span class="pct count-only">${s.items} recipe${s.items === 1 ? '' : 's'}</span>` : `<div class="progress"><div class="bar"><i style="width:${pct}%"></i></div><span class="pct">${s.n}/${s.total} · ${pct}%</span></div>`}
       <button class="small-btn" data-act="editCat">⚙ Edit</button>
     </div>
     ${c.note ? `<div class="cat-note">${esc(c.note)}</div>` : ''}

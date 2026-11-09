@@ -267,3 +267,4 @@ select.sort{color:var(--ink)}
 .gather-list .g.cook{background:#fff0e3;box-shadow:0 2px 0 #f2d3b4}
 .gather-list .g.cook i{font-style:normal;font-size:10.5px;font-weight:800;color:#b25a22;background:#ffe6d6;border-radius:999px;padding:1px 6px;margin-left:5px}
 .turnin.again{background:#ece4ff;color:#6a4fb3;border:2px solid #d8ccff}
+.cat-head .count-only{margin-left:auto;margin-right:4px;font-weight:800;color:var(--ink-soft);font-size:14px}
