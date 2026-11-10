@@ -264,3 +264,12 @@ select.sort{color:var(--ink)}
 /* make again */
 .turnin.again{background:#ece4ff;color:#6a4fb3;border:2px solid #d8ccff}
 .cat-head .count-only{margin-left:auto;margin-right:4px;font-weight:800;color:var(--ink-soft);font-size:14px}
+
+/* FFXIV: duties, side chains, starting-city picker */
+.qs.badge-dungeon{background:#ece4ff;color:#6a4fb3}
+.qs.badge-trial{background:#ffe6d6;color:#b25a22}
+.qs.badge-branch{background:#dcf4e3;color:#2c7a49}
+.qs.badge-lvnum{background:#f3eef7;color:#7d6a8c}
+.choice-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:linear-gradient(135deg,#fff0f6,#eef6ff);border:2px dashed #e6c8e0;border-radius:18px;padding:12px 14px;margin-bottom:14px}
+.choice-bar span{display:flex;gap:8px;flex-wrap:wrap}
+.choice-bar small{flex-basis:100%;color:var(--ink-soft);font-weight:700}

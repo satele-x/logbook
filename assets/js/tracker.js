@@ -177,7 +177,7 @@ function buildState() {
     m.cats.forEach(c => {
       if (U.hidden.cats[c.id]) return;
       const co = U.cats[c.id] || {};
-      const C = { id: c.id, official: true, name: co.name || c.name, icon: co.icon || c.icon, note: c.note || '', pipLabels: c.tags || [], ordered: !!c.ordered, currency: c.currency || '', turnIn: !!c.turnIn, dishes: !!c.dishes, repeat: !!c.repeat,
+      const C = { id: c.id, official: true, name: co.name || c.name, icon: co.icon || c.icon, note: c.note || '', pipLabels: c.tags || [], ordered: !!c.ordered, currency: c.currency || '', turnIn: !!c.turnIn, dishes: !!c.dishes, repeat: !!c.repeat, choice: c.choice || '',
         reset: co.reset !== undefined ? co.reset : (c.reset || ''),
         // server resets are stored in UTC in the data file so they're right in every timezone
         resetUtcHour: (co.resetHour == null && co.reset === undefined && c.resetUtcHour != null) ? c.resetUtcHour : null,
@@ -296,6 +296,7 @@ function indexTwins() {
   })));
 }
 // only shop items and tiered upgrades (permits) can be wished; a wished blueprint brings its recipe along
+const hasWishables = () => state.menus.some(m => m.cats.some(c => c.items.some(canWish))); // games with no shops/permits skip the Wishlist tab
 const canWish = it => !!(it.official && (it.price || (it.levels && it.levels.length)));
 const isWished = it => it.fav && (canWish(it) || !!(shopTwin(it) && shopTwin(it).it.fav));
 const shopTwin = it => { const t = TWINS.get(it.name.toLowerCase()); return t && t.shop && t.shop.it !== it ? t.shop : null; };
@@ -380,7 +381,7 @@ function renderTabs() {
     return `<button class="tab ${!isSpecial() && m.id === curMenu().id ? 'on' : ''}" style="--tabc:${col[0]};--tabd:${col[1]}" data-act="menu" data-id="${esc(m.id)}"><span>${esc(m.icon)}</span>${esc(m.name)}<span class="cnt">${m.cats.length && m.cats.every(x => x.repeat) ? s.t : `${s.n}/${s.t}`}</span></button>`;
   }).join('');
   const tabs = $('#tabs');
-  tabs.innerHTML = `<button class="tab ${isNeeded() ? 'on' : ''}" style="--tabc:#ffb3c8;--tabd:#ef7f9f" data-act="menu" data-id="needed"><span>📌</span>Pinned<span class="cnt">${left}</span></button><button class="tab ${isWish() ? 'on' : ''}" style="--tabc:#ffc4dc;--tabd:#e9719f" data-act="menu" data-id="wish"><span>💝</span>Wishlist<span class="cnt">${wishGoals().filter(g => !g.done).length}</span></button>` + h + `<button class="tab add" data-act="addMenu">＋ new menu</button>`;
+  tabs.innerHTML = `<button class="tab ${isNeeded() ? 'on' : ''}" style="--tabc:#ffb3c8;--tabd:#ef7f9f" data-act="menu" data-id="needed"><span>📌</span>Pinned<span class="cnt">${left}</span></button>${hasWishables() ? `<button class="tab ${isWish() ? 'on' : ''}" style="--tabc:#ffc4dc;--tabd:#e9719f" data-act="menu" data-id="wish"><span>💝</span>Wishlist<span class="cnt">${wishGoals().filter(g => !g.done).length}</span></button>` : ''}` + h + `<button class="tab add" data-act="addMenu">＋ new menu</button>`;
   const on = tabs.querySelector('.tab.on'); // keep the active tab visible on phones
   if (on && tabs.scrollWidth > tabs.clientWidth) tabs.scrollLeft = on.offsetLeft - tabs.clientWidth / 2 + on.offsetWidth / 2;
 }
@@ -403,6 +404,8 @@ const PLACE_REGION = {
   'global-village': 'loftia-city', 'the-park': 'loftia-city', 'scrap-quarter': 'loftia-city',
   'museum': 'gridfall', 'historical-quarter': 'gridfall', 'concrete-jungle': 'gridfall'
 };
+// tag text that starts with one of these gets that look (FFXIV duties and side chains)
+const BADGE_KIND = [['⚔️', 'dungeon'], ['🔥', 'trial'], ['↳', 'branch']];
 const CURRENCY = { dew: '💧', bloom: '🌸' };
 const CUR_NAME = { dew: 'Dew', bloom: 'Bloom' };
 const priceRange = p => { const m = String(p).replace(/,/g, '').match(/(\d+)(?:\s*[–-]\s*(\d+))?/); return m ? [+m[1], +(m[2] || m[1])] : [0, 0]; };
@@ -450,7 +453,7 @@ function itemCard(c, it, where) {
     else if (SHOW_AVAILABLE) status = `<div class="qs open">✨ available</div>`;
   }
   if (it.price) status = `<span class="qs price ${d ? 'got' : ''}">${d ? '✓ bought · ' : ''}${CURRENCY[it.cur] || ''} ${esc(it.price)}</span>` + status;
-  if (it.badges && it.badges.length) status = it.badges.map(b => { const k = String(b).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); return `<span class="qs badge badge-${esc(k)}${PLACE_REGION[k] ? ' badge-' + PLACE_REGION[k] : ''}">${esc(b)}</span>`; }).join(' ') + status;
+  if (it.badges && it.badges.length) status = it.badges.map(b => { const k = String(b).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); const kind = BADGE_KIND.find(x => String(b).startsWith(x[0])); return `<span class="qs badge badge-${esc(k)}${PLACE_REGION[k] ? ' badge-' + PLACE_REGION[k] : ''}${kind ? ' badge-' + kind[1] : ''}${/^Lv \d+$/.test(b) ? ' badge-lvnum' : ''}">${esc(b)}</span>`; }).join(' ') + status;
   if (it.pick) { const on = it.parts.filter(p => p.on).length; status += `<div class="qs pick">${Math.min(on, it.pick)}/${it.pick} — pick any ${it.pick}</div>`; }
   if (needsTurnIn(c, it)) {
     const ready = it.parts.every(p => p.on);
@@ -607,7 +610,9 @@ function renderCat() {
     ? `<div class="empty"><div class="big">🌱</div>No entries yet${c.official ? ' — this list is still being filled in' : '! Add them one at a time above, or paste a whole list with <b>⚙ Edit → Paste a list</b>'}.</div>`
     : U.ui.pinOnly && !q ? `<div class="empty"><div class="big">📍</div>Nothing pinned in ${esc(c.name)} yet — tap 📍 on anything you're working towards.</div>`
     : `<div class="empty"><div class="big">${U.ui.hideDone ? '🎉' : '🔍'}</div>${U.ui.hideDone && !q ? 'Everything here is done — yay!' : 'Nothing matches that search.'}</div>`;
-  v.innerHTML = `
+  const choiceCats = curMenu().cats.filter(x => x.choice && x.choice === c.choice);
+  const picker = c.choice && choiceCats.length > 1 ? `<div class="choice-bar"><b>Which city did you start in?</b><span>${choiceCats.map(x => `<button class="small-btn" data-act="pickChoice" data-id="${esc(x.id)}">${esc(x.icon)} ${esc(x.name.split(' · ').pop())}</button>`).join('')}</span><small>The other starting chains get tucked away (bring them back anytime from 🧺).</small></div>` : '';
+  v.innerHTML = `${picker}
     <div class="cat-head">
       <h2>${esc(c.icon)} ${esc(c.name)}${c.reset ? `<span class="reset-pill" title="Ticks clear automatically">🔁 resets in ${fmtLeft(nextBoundary(c, Date.now()) - Date.now())}</span>` : ''}</h2>
       ${c.repeat ? `<span class="pct count-only">${s.items} recipe${s.items === 1 ? '' : 's'}</span>` : `<div class="progress"><div class="bar"><i style="width:${pct}%"></i></div><span class="pct">${s.n}/${s.total} · ${pct}%</span></div>`}
@@ -681,6 +686,11 @@ document.addEventListener('click', e => {
     if (i < 0 || j < 0 || j >= ids.length) return;
     [ids[i], ids[j]] = [ids[j], ids[i]]; savePinOrder(ids);
   }
+  else if (act === 'pickChoice') {
+    const m = curMenu(), pick = m.cats.find(x => x.id === t.dataset.id); if (!pick) return;
+    persist(); m.cats.forEach(x => { if (x.choice === pick.choice && x !== pick) U.hidden.cats[x.id] = 1; });
+    U.ui.cat[m.id] = pick.id; rebuild(); save(); render(); toast(`${pick.icon} ${pick.name.split(' · ').pop()} it is!`);
+  }
   else if (act === 'again' && hit) { setAll(hit.c, hit.it, false); save(); render(); toast(`🔁 ready to make ${hit.it.name} again`); }
   else if (act === 'turnin' && hit) {
     const before = isDone(hit.c, hit.it);
@@ -712,12 +722,35 @@ document.addEventListener('click', e => {
   else if (act === 'addCat') openCatModal(null);
   else if (act === 'addMenu') openMenuModal(null);
 });
+// games where the whole story is one long chain (FFXIV): after a category, carry on into the next one
+function chainCats() { const out = []; state.menus.forEach(m => m.cats.forEach(c => { if (c.ordered) out.push(c); })); return out; }
+function nextInChain(c) {
+  const cs = chainCats(), i = cs.indexOf(c);
+  for (const x of cs.slice(i + 1)) { if (x.choice) continue; const n = x.items.find(y => !isDone(x, y)); if (n) return n; }
+  return null;
+}
+function doneUpTo(c, it) { // tick every quest in the chain up to (and including) this one
+  const cs = chainCats(), undecided = g => cs.filter(x => x.choice === g).length > 1;
+  let n = 0, hadPin = false;
+  for (const x of cs) {
+    if (x.choice && x !== c && undecided(x.choice)) continue; // starting city not picked yet: leave those alone
+    let hit = false;
+    for (const y of x.items) {
+      if (!isDone(x, y)) { setAll(x, y, true); n++; }
+      if (y.pinned) { y.pinned = false; hadPin = true; }
+      if (y === it) { hit = true; break; }
+    }
+    if (hit) break;
+  }
+  if (hadPin) { const nx = c.items.find(y => !isDone(c, y)) || nextInChain(c); if (nx) nx.pinned = true; }
+  return n;
+}
 function afterChange(c, before, after, el, it) {
   const all = c.items.length && catStats(c).full === c.items.length;
   // ordered chains (main story, character quests): a finished pinned quest hands its pin to the next one
   let moved = null;
   if (!before && after && it && it.pinned && c.ordered) {
-    const next = c.items.find(x => x !== it && !isDone(c, x));
+    const next = c.items.find(x => x !== it && !isDone(c, x)) || (DATA.chain ? nextInChain(c) : null);
     it.pinned = false;
     if (next) { next.pinned = true; moved = next; }
   }
@@ -781,9 +814,12 @@ function openItemModal({ m: menu, c, it }) {
       <div class="ro-hint">${it.note ? esc(it.note) + '<br>' : ''}This entry comes from the shared list, so it updates by itself — you can add your own note.</div>
       <div class="field"><label>My note</label><input id="iMy" value="${esc(it.myNote)}" placeholder="e.g. need to grow more tomatoes first"></div>
       <label class="toggle" style="height:44px"><input type="checkbox" id="iPin" ${it.pinned ? 'checked' : ''}> 📌 pin this</label>
+      ${DATA.chain && c.ordered ? `<button class="btn" data-m="upto" style="margin-top:10px;width:100%">✓ I've done everything up to here</button>` : ''}
       <div class="m-actions"><button class="btn" data-m="hide">🙈 hide from my list</button><span style="flex:1"></span><button class="btn ghost" data-m="x">cancel</button><button class="btn primary" data-m="ok">save</button></div>`, m => {
       m.querySelector('[data-m=x]').onclick = closeModal;
       m.querySelector('[data-m=hide]').onclick = () => { persist(); U.hidden.items[it.id] = 1; rebuild(); save(); closeModal(); render(); toast('hidden — bring it back from 🧺'); };
+      const up = m.querySelector('[data-m=upto]');
+      if (up) up.onclick = () => { const n = doneUpTo(c, it); save(); closeModal(); render(); toast(n ? `✓ caught up — ticked ${n.toLocaleString('en-US')} quest${n === 1 ? '' : 's'}` : 'already all ticked ✨'); };
       const ok = () => { it.myNote = m.querySelector('#iMy').value.trim(); it.pinned = m.querySelector('#iPin').checked; save(); closeModal(); render(); };
       m.querySelector('[data-m=ok]').onclick = ok;
       m.querySelector('#iMy').onkeydown = e => { if (e.key === 'Enter') ok(); };

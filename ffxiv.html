@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title> ffxiv logbook </title>
+<meta name="description" content="A cute Final Fantasy XIV main scenario quest tracker: every MSQ quest from A Realm Reborn to Dawntrail, with the dungeons and trials they unlock. Saved in your browser.">
+<meta name="theme-color" content="#fde7f3">
+<link rel="icon" href="/assets/img/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/tracker.css">
+<link rel="stylesheet" href="/assets/css/dusk.css">
+<script src="/assets/js/theme.js"></script>
+</head>
+<!-- data-game must match the file name in /data (e.g. /data/ffxiv.json) -->
+<body data-game="ffxiv">
+<div class="sky" id="sky" aria-hidden="true"></div>
+
+<header class="site-head">
+  <div class="in">
+    <a class="brand" href="/"><span class="spark">✦</span> satele's logbook </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="/">all games</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <div class="app-head">
+    <img class="mascot" src="/assets/img/cat.svg" alt="" width="76" height="76">
+    <div class="title-block">
+      <h1 id="gameTitle"> FFXIV Logbook </h1>
+      <div class="bubble" id="bubble">loading your logbook… ☁️</div>
+    </div>
+    <div class="head-actions">
+      <span class="pill" id="savePill">💾 saved in this browser </span>
+      <button class="icon-btn" id="menuSettingsBtn" title="Edit this menu" aria-label="Edit this menu">⚙️</button>
+      <button class="icon-btn" id="backupBtn" title="Backup, restore & settings" aria-label="Backup, restore and settings">🧺</button>
+    </div>
+  </div>
+
+  <div id="warn"></div>
+  <nav class="tabs" id="tabs" aria-label="Menus"></nav>
+
+  <section class="panel">
+    <div class="chips" id="chips"></div>
+    <div id="catView"><div class="loading">fetching the latest lists… ☁️</div></div>
+  </section>
+
+  <div class="data-info" id="dataInfo"></div>
+</main>
+
+<footer class="site-foot">
+  made with 💖 by satele · fan-made &amp; unofficial — not affiliated with Square Enix. FINAL FANTASY is a registered trademark of Square Enix Holdings Co., Ltd.<br>
+  Your progress is stored only in this browser. Use 🧺 to back it up or move it to another device.
+</footer>
+
+<div class="scrim" id="scrim"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/assets/js/sky.js" defer></script>
+<script src="/assets/js/tracker.js" defer></script>
+</body>
+</html>

@@ -3,7 +3,7 @@
     {
       "id": "loftia",
       "name": "Loftia",
-      "tagline": "cozy solarpunk mmo  — quests, research bundles, inspirations, recipes & collections.",
+      "tagline": "Cozy sky-island life — quests, research bundles, inspirations, recipes & collections.",
       "icon": "☁️",
       "color": [
         "#c9b6ff",
@@ -14,11 +14,22 @@
     {
       "id": "stardew",
       "name": "Stardew Valley",
-      "tagline": "community center bundles: every room, every item, with pick-any bundles and a combined shopping list.",
+      "tagline": "Community Center bundles: every room, every item, with pick-any bundles and a combined shopping list.",
       "icon": "🌱",
       "color": [
         "#b8ecc6",
         "#4cc794"
+      ],
+      "status": "live"
+    },
+    {
+      "id": "ffxiv",
+      "name": "Final Fantasy XIV",
+      "tagline": "Main Scenario Quests from A Realm Reborn to Dawntrail, with the dungeons & trials each one unlocks.",
+      "icon": "🗡️",
+      "color": [
+        "#b9d7ff",
+        "#5b8fe0"
       ],
       "status": "live"
     }
