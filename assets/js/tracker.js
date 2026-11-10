@@ -148,7 +148,7 @@ function mergeItem(it, C) {
     // if this entry was ticked before it had materials, carry the tick over to all of them
     parts: (it.needs || []).map(l => ({ label: l, on: !!(p.parts && p.parts[partKey(l)]) || (!!p.d && !p.parts) })),
     pips: C.pipLabels.map((_, i) => !!(p.p && p.p[i])),
-    done: (it.needs && it.needs.length) ? false : !!p.d, pinned: !!p.pin, fav: !!p.fav,
+    done: (it.needs && it.needs.length) ? false : !!p.d, pinned: !!p.pin, fav: !!p.fav, autoPin: !!p.ap,
     // before turn-in existed, fully gathered meant finished — so count those as handed in
     turned: p.ti != null ? !!p.ti : !!(C.turnIn && it.needs && it.needs.length && it.needs.every(l => (p.parts && p.parts[partKey(l)]) || (p.d && !p.parts))),
     once: !!it.once, // tools & upgrades you only ever craft once — no "make again"
@@ -229,6 +229,7 @@ function persist() {
         if (I.done) p.d = 1;
         if (I.turned) p.ti = 1; else if (C.turnIn && I.parts.length && I.parts.every(pt => pt.on)) p.ti = 0; // remembered 'not yet'
         if (I.pinned) p.pin = 1;
+        if (I.pinned && I.autoPin) p.ap = 1;
         if (I.fav) p.fav = 1;
         if (I.levels.length && I.lv !== (I.startLv || 0)) p.lv = I.lv;
         if (I.myNote) p.note = I.myNote;
@@ -261,6 +262,24 @@ function setPill(t) { const p = $('#savePill'); if (p) p.textContent = t; }
 function rebuild() { state = buildState(); indexTwins(); indexDishes(); }
 // dishes you cook (categories marked "dishes": true) — Pinned breaks them down into their ingredients
 let DISHES = new Map();
+// pin a daily bin (or anything that asks for a dish) and the dish's recipe card gets pinned with it;
+// unpin it (or the bin's request changes at reset) and recipes it pinned for you get unpinned again
+function dishesWanted() {
+  const want = new Set();
+  state.menus.forEach(m => m.cats.forEach(c => c.items.forEach(it => {
+    if (!it.pinned || it.autoPin || isDone(c, it)) return;
+    it.parts.forEach(pt => { if (pt.on) return; const k = splitQty(pt.label)[0].toLowerCase(); const r = DISHES.get(k); if (r && r.it !== it) want.add(k); });
+  })));
+  return want;
+}
+function syncAutoPins() {
+  const want = dishesWanted(); let added = 0;
+  DISHES.forEach((r, k) => {
+    if (want.has(k) && !r.it.pinned) { r.it.pinned = true; r.it.autoPin = true; added++; }
+    else if (!want.has(k) && r.it.autoPin) { if (r.it.pinned) r.it.pinned = false; r.it.autoPin = false; }
+  });
+  return added;
+}
 function indexDishes() {
   DISHES = new Map();
   state.menus.forEach(m => m.cats.forEach(c => { if (c.dishes) c.items.forEach(it => { if (it.parts.length && !DISHES.has(it.name.toLowerCase())) DISHES.set(it.name.toLowerCase(), { c, it }); }); }));
@@ -456,7 +475,7 @@ function itemCard(c, it, where) {
 function renderNeeded() {
   const v = $('#catView'), pins = allPinned(), hide = U.ui.hideDone;
   const shown = pins.filter(p => !hide || !isDone(p.c, p.it));
-  const tally = new Map(), make = new Map();
+  const tally = new Map();
   const picks = [];
   pins.forEach(({ it }) => {
     if (it.levels.length) {
@@ -472,18 +491,14 @@ function renderNeeded() {
     it.parts.forEach(p => {
       if (p.on) return;
       const [n, q] = splitQty(p.label), k = n.toLowerCase();
-      // a dish (e.g. a bin wants Fries) can't be gathered — list it to cook and gather its ingredients instead
+      // a dish (e.g. a bin wants Fries) is cooked, not gathered — its recipe card is pinned alongside instead
       const r = DISHES.get(k);
-      if (r && r.it !== it) {
-        const mk = make.get(k) || { n, q: 0, c: r.c, it: r.it, for: [] }; mk.q += q; mk.for.push(it.name); make.set(k, mk);
-        if (!r.it.pinned) r.it.parts.forEach(rp => { const [rn, rq] = splitQty(rp.label), rk = rn.toLowerCase(); const t = tally.get(rk) || { n: rn, q: 0, qtyKnown: true, for: [] }; t.q += rq * q; t.for.push(`${n} (${it.name})`); tally.set(rk, t); });
-        return;
-      }
+      if (r && r.it !== it && r.it.pinned) return;
       const t = tally.get(k) || { n, q: 0, qtyKnown: /[×x]\s*\d+\s*$/i.test(p.label), for: [] };
       t.q += q; t.for.push(it.name); tally.set(k, t);
     });
   });
-  const cook = [...make.values()];
+
   const gather = [...tally.values()].sort((a, b) => a.n.localeCompare(b.n));
   const s = pins.reduce((a, p) => { const u = units(p.c, p.it); a.n += u[0]; a.t += u[1]; return a; }, { n: 0, t: 0 });
   const pct = s.t ? Math.round(s.n / s.t * 100) : 0;
@@ -502,7 +517,6 @@ function renderNeeded() {
       ${gather.length || picks.length ? `<div class="gather"><div class="gather-h">🧺 Stuff to gather <span>${gather.length + picks.length} thing${gather.length + picks.length === 1 ? '' : 's'}</span></div>
         <div class="gather-list">${gather.map(g => `<span class="g" title="for: ${esc(g.for.join(', '))}">${esc(g.n)}${g.qtyKnown ? ` <b>×${g.q.toLocaleString('en-US')}</b>` : (g.for.length > 1 ? ` <b>(${g.for.length} bundles)</b>` : '')}</span>`).join('')}</div>
         ${picks.map(pk => `<div class="gather-pick"><b>${esc(pk.name)}:</b> any ${pk.left} more of ${esc(pk.opts.join(', '))}</div>`).join('')}
-        ${cook.length ? `<div class="cook-h">🍳 Cook first <span>ingredients are already in the list above</span></div><div class="gather-list">${cook.map(m => { const lv = (m.it.badges || []).find(b => /Lv/.test(b)); return `<span class="g cook" title="${esc(m.it.parts.map(x => x.label).join(', '))} · for: ${esc(m.for.join(', '))}">${esc(m.n)} <b>×${m.q}</b>${lv ? `<i>${esc(lv.replace(/^.*?(Lv\.? ?\d)/, '$1'))}</i>` : ''}</span>`; }).join('')}</div>` : ''}
         <div class="hint">Unticked items from your pinned entries, added up. Tick them off on the cards below as you hand them in.</div></div>` : ''}
       ${grp.length ? `<div class="pin-grps">${grp.map((g, gi) => `<section class="pin-grp" data-cat="${esc(g.c.id)}"><div class="grp-h">${esc(g.c.icon)} ${esc(g.c.name)} <span>· ${esc(g.m.name)}</span>${grp.length > 1 ? `<span class="grp-move"><button data-act="grpMove" data-cat="${esc(g.c.id)}" data-dir="-1" ${gi ? '' : 'disabled'} aria-label="Move ${esc(g.c.name)} up">▲</button><button data-act="grpMove" data-cat="${esc(g.c.id)}" data-dir="1" ${gi < grp.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(g.c.name)} down">▼</button></span>` : ''}</div><div class="list">${g.items.map(it => itemCard(g.c, it)).join('')}</div></section>`).join('')}</div>` : ''}${grp.length ? '' : `<div class="empty"><div class="big">🎉</div>Everything you pinned is done!</div>`}
     `}`;
@@ -597,6 +611,7 @@ function renderCat() {
     <div class="cat-head">
       <h2>${esc(c.icon)} ${esc(c.name)}${c.reset ? `<span class="reset-pill" title="Ticks clear automatically">🔁 resets in ${fmtLeft(nextBoundary(c, Date.now()) - Date.now())}</span>` : ''}</h2>
       ${c.repeat ? `<span class="pct count-only">${s.items} recipe${s.items === 1 ? '' : 's'}</span>` : `<div class="progress"><div class="bar"><i style="width:${pct}%"></i></div><span class="pct">${s.n}/${s.total} · ${pct}%</span></div>`}
+      ${c.reset && c.items.length ? `<button class="small-btn" data-act="pinAll">${c.items.every(it => it.pinned) ? 'unpin all' : '📌 pin all'}</button>` : ''}
       <button class="small-btn" data-act="editCat">⚙ Edit</button>
     </div>
     ${c.note ? `<div class="cat-note">${esc(c.note)}</div>` : ''}
@@ -680,8 +695,18 @@ document.addEventListener('click', e => {
     save(); render(); toast(on ? '💝 added to your wishlist' : 'removed from wishlist');
   }
   else if (act === 'unwishDone') { wishGoals().forEach(g => { if (g.done) g.members.forEach(x => { x.it.fav = false; }); }); save(); render(); toast('tidied up ✨'); }
-  else if (act === 'pin' && hit) { hit.it.pinned = !hit.it.pinned; save(); render(); toast(hit.it.pinned ? '📌 pinned!' : 'unpinned'); }
-  else if (act === 'unpinDone') { allPinned().forEach(p => { if (isDone(p.c, p.it)) p.it.pinned = false; }); save(); render(); toast('tidied up ✨'); }
+  else if (act === 'pin' && hit) {
+    hit.it.pinned = !hit.it.pinned; hit.it.autoPin = false;
+    const added = syncAutoPins(); save(); render();
+    toast(hit.it.pinned ? (added ? `📌 pinned + ${added} recipe${added === 1 ? '' : 's'} to cook` : '📌 pinned!') : 'unpinned');
+  }
+  else if (act === 'pinAll') {
+    const c = curCat(), all = c.items.every(it => it.pinned);
+    c.items.forEach(it => { it.pinned = !all; it.autoPin = false; });
+    const added = syncAutoPins(); save(); render();
+    toast(all ? 'unpinned everything here' : `📌 pinned all${added ? ` + ${added} recipe${added === 1 ? '' : 's'} to cook` : ''}`);
+  }
+  else if (act === 'unpinDone') { allPinned().forEach(p => { if (isDone(p.c, p.it)) p.it.pinned = false; }); syncAutoPins(); save(); render(); toast('tidied up ✨'); }
   else if (act === 'editItem' && hit) openItemModal(hit);
   else if (act === 'editCat') openCatModal(curCat());
   else if (act === 'addCat') openCatModal(null);
@@ -1011,7 +1036,7 @@ async function boot() {
   const updated = U.dataVersion && U.dataVersion !== DATA.version;
   U.known = allIds; U.dataVersion = DATA.version;
 
-  rebuild(); checkResets(); save();
+  rebuild(); checkResets(); syncAutoPins(); save();
   render(); renderDataInfo();
   if (SHOW_NEW_BADGES && NEW.size) setTimeout(() => toast(`✨ ${NEW.size} new entr${NEW.size === 1 ? 'y' : 'ies'} added since your last visit!`), 500);
   else if (updated) setTimeout(() => toast('📦 lists updated — your progress is safe!'), 500);
@@ -1023,7 +1048,7 @@ async function boot() {
   });
   // dailies + countdown
   setInterval(() => {
-    if (checkResets()) { save(); refreshBins(); indexData(); rebuild(); render(); toast('🔁 new day — fresh dailies & bin requests!'); return; }
+    if (checkResets()) { save(); refreshBins(); indexData(); rebuild(); syncAutoPins(); save(); render(); toast('🔁 new day — fresh dailies & bin requests!'); return; }
     const c = !isSpecial() && curCat(), p = document.querySelector('.reset-pill');
     if (c && c.reset && p) p.textContent = '🔁 resets in ' + fmtLeft(nextBoundary(c, Date.now()) - Date.now());
   }, 60000);
