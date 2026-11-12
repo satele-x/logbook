@@ -31,7 +31,7 @@ const partKey = label => splitQty(label)[0].toLowerCase();
 // "Dew ×10000" -> "Dew ×10,000" for display
 const fmtQty = label => { const [n, q] = splitQty(label); return /[×x]\s*\d+\s*$/i.test(label) ? `${n} ×${q.toLocaleString('en-US')}` : label; };
 
-const EMOJIS = ['🍳','🧵','🪚','🔧','⚗️','🛠️','🪴','🌱','🍰','🍜','🧋','🐟','🏺','📟','💭','🐾','👗','🪑','🧸','🌸','⭐','💎','🗝️','📝','☀️','🌙','🎀','🍓','🦋','🐚','🎣','🏝️','📜','🔬','💡','🔁'];
+const EMOJIS = ['🍳','🧵','🪚','🔧','⚗️','🛠️','🪴','🌱','🍰','🍜','🧋','☕','🐟','🏺','📟','💭','🐾','👗','🪑','🧸','🌸','⭐','💎','🗝️','📝','☀️','🌙','🎀','🍓','🦋','🐚','🎣','🏝️','📜','🔬','💡','🔁'];
 const MENU_COLORS = [['#ff9ec7','#f472a8'],['#9fd5ff','#5bb2ee'],['#9be7c4','#4cc794'],['#c9b6ff','#9b83f0'],['#ffc2a1','#f59a6c'],['#ffe08a','#e6b93b']];
 const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
@@ -507,8 +507,15 @@ function renderNeeded() {
   const pct = s.t ? Math.round(s.n / s.t * 100) : 0;
   const groups = new Map();
   shown.forEach(p => { if (!groups.has(p.c.id)) groups.set(p.c.id, { m: p.m, c: p.c, items: [] }); groups.get(p.c.id).items.push(p.it); });
-  const po = U.ui.pinOrder || [], rank = id => { const k = po.indexOf(id); return k < 0 ? 1e6 : k; };
-  const grp = [...groups.values()].map((g, k) => [g, k]).sort((a, b) => rank(a[0].c.id) - rank(b[0].c.id) || a[1] - b[1]).map(x => x[0]); // your own section order
+  // recipes pinned for you (e.g. for the daily bins) sit right under the section that asked for them
+  const base = [...groups.values()];
+  const asker = base.find(g => g.items.some(it => !it.autoPin && it.parts.some(pt => !pt.on && DISHES.has(splitQty(pt.label)[0].toLowerCase()))));
+  const po = U.ui.pinOrder || [];
+  // only-auto-pinned recipes are "attached": they always follow their section and have no arrows of their own
+  base.forEach(g => { g.attached = !!(asker && g !== asker && g.c.dishes && g.items.every(it => it.autoPin)); });
+  const rank = g => { const k = po.indexOf(g.c.id); return k < 0 ? 1e6 : k; };
+  const free = base.filter(g => !g.attached).map((g, k) => [g, k]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(x => x[0]); // your own section order
+  const grp = []; free.forEach(g => { grp.push(g); if (g === asker) base.filter(x => x.attached).forEach(x => grp.push(x)); });
   v.innerHTML = `
     <div class="cat-head">
       <h2>📌 Pinned</h2>
@@ -521,7 +528,7 @@ function renderNeeded() {
         <div class="gather-list">${gather.map(g => `<span class="g" title="for: ${esc(g.for.join(', '))}">${esc(g.n)}${g.qtyKnown ? ` <b>×${g.q.toLocaleString('en-US')}</b>` : (g.for.length > 1 ? ` <b>(${g.for.length} bundles)</b>` : '')}</span>`).join('')}</div>
         ${picks.map(pk => `<div class="gather-pick"><b>${esc(pk.name)}:</b> any ${pk.left} more of ${esc(pk.opts.join(', '))}</div>`).join('')}
         <div class="hint">Unticked items from your pinned entries, added up. Tick them off on the cards below as you hand them in.</div></div>` : ''}
-      ${grp.length ? `<div class="pin-grps">${grp.map((g, gi) => `<section class="pin-grp" data-cat="${esc(g.c.id)}"><div class="grp-h">${esc(g.c.icon)} ${esc(g.c.name)} <span>· ${esc(g.m.name)}</span>${grp.length > 1 ? `<span class="grp-move"><button data-act="grpMove" data-cat="${esc(g.c.id)}" data-dir="-1" ${gi ? '' : 'disabled'} aria-label="Move ${esc(g.c.name)} up">▲</button><button data-act="grpMove" data-cat="${esc(g.c.id)}" data-dir="1" ${gi < grp.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(g.c.name)} down">▼</button></span>` : ''}</div><div class="list">${g.items.map(it => itemCard(g.c, it)).join('')}</div></section>`).join('')}</div>` : ''}${grp.length ? '' : `<div class="empty"><div class="big">🎉</div>Everything you pinned is done!</div>`}
+      ${grp.length ? `<div class="pin-grps">${grp.map((g, gi) => `<section class="pin-grp${g.attached ? ' attached' : ''}" data-cat="${esc(g.c.id)}"><div class="grp-h">${esc(g.c.icon)} ${esc(g.c.name)} <span>· ${esc(g.m.name)}</span>${g.attached ? `<span class="grp-move attached">for your dailies 🔗</span>` : free.length > 1 ? `<span class="grp-move"><button data-act="grpMove" data-cat="${esc(g.c.id)}" data-dir="-1" ${free.indexOf(g) ? '' : 'disabled'} aria-label="Move ${esc(g.c.name)} up">▲</button><button data-act="grpMove" data-cat="${esc(g.c.id)}" data-dir="1" ${free.indexOf(g) < free.length - 1 ? '' : 'disabled'} aria-label="Move ${esc(g.c.name)} down">▼</button></span>` : ''}</div><div class="list">${g.items.map(it => itemCard(g.c, it)).join('')}</div></section>`).join('')}</div>` : ''}${grp.length ? '' : `<div class="empty"><div class="big">🎉</div>Everything you pinned is done!</div>`}
     `}`;
 }
 
@@ -682,7 +689,7 @@ document.addEventListener('click', e => {
   else if (act === 'lvl' && hit) { const before = isDone(hit.c, hit.it), i = +t.dataset.i; hit.it.lv = hit.it.lv === i + 1 ? i : i + 1; afterChange(hit.c, before, isDone(hit.c, hit.it), t, hit.it); }
   else if (act === 'pip' && hit) { const before = isDone(hit.c, hit.it), i = +t.dataset.i; hit.it.pips[i] = !hit.it.pips[i]; afterChange(hit.c, before, isDone(hit.c, hit.it), t, hit.it); }
   else if (act === 'grpMove') {
-    const ids = [...document.querySelectorAll('.pin-grps > .pin-grp')].map(x => x.dataset.cat), i = ids.indexOf(t.dataset.cat), j = i + +t.dataset.dir;
+    const ids = [...document.querySelectorAll('.pin-grps > .pin-grp:not(.attached)')].map(x => x.dataset.cat), i = ids.indexOf(t.dataset.cat), j = i + +t.dataset.dir;
     if (i < 0 || j < 0 || j >= ids.length) return;
     [ids[i], ids[j]] = [ids[j], ids[i]]; savePinOrder(ids);
   }
