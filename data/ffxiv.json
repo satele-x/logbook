@@ -1,14 +1,14 @@
 {
   "game": "ffxiv",
   "name": "FFXIV",
-  "version": "2026.11.10a",
+  "version": "2026.11.12a",
   "updated": "2026-11-10",
   "gameVersion": "Patch 7.56",
   "chain": true,
   "sources": [{"name":"Console Games Wiki — MSQ","url":"https://ffxiv.consolegameswiki.com/wiki/Quest#Quest_Tracker"}],
   "menus": [
-    { "id": "arr", "name": "A Realm Reborn", "icon": "🌋", "color": 0, "cats": [
-      { "id": "msq.arr.lv-1-15-gridania", "name": "Lv 1–15 · Gridania", "icon": "🌳", "ordered": true, "choice": "start-city", "note": "Your starting city’s quests — pick yours with the buttons above and the other two tuck away.", "items": [
+    { "id": "msq", "name": "Main Story", "icon": "📜", "color": 4, "layout": "sections", "groups": [{"name":"A Realm Reborn","icon":"🌋"},{"name":"Heavensward","icon":"🐉"},{"name":"Stormblood","icon":"🌸"},{"name":"Shadowbringers","icon":"🌌"},{"name":"Endwalker","icon":"🌙"},{"name":"Dawntrail","icon":"🌺"}], "cats": [
+      { "id": "msq.arr.lv-1-15-gridania", "name": "Lv 1–15 · Gridania", "icon": "🌳", "ordered": true, "choice": "start-city", "note": "Your starting city’s quests — pick yours with the buttons above and the other two tuck away.", "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.lv-1-15-gridania.coming-to-gridania","name":"Coming to Gridania","badges":["Lv 1"]},
         {"id":"msq.arr.lv-1-15-gridania.close-to-home","name":"Close to Home","badges":["Lv 1"]},
         {"id":"msq.arr.lv-1-15-gridania.to-the-bannock","name":"To the Bannock","badges":["Lv 4"]},
@@ -34,7 +34,7 @@
         {"id":"msq.arr.lv-1-15-gridania.the-gridanian-envoy","name":"The Gridanian Envoy","badges":["Lv 15"]},
         {"id":"msq.arr.lv-1-15-gridania.call-of-the-sea","name":"Call of the Sea","badges":["Lv 15"]}
       ]},
-      { "id": "msq.arr.lv-1-15-limsa-lominsa", "name": "Lv 1–15 · Limsa Lominsa", "icon": "⚓", "ordered": true, "choice": "start-city", "note": "Your starting city’s quests — pick yours with the buttons above and the other two tuck away.", "items": [
+      { "id": "msq.arr.lv-1-15-limsa-lominsa", "name": "Lv 1–15 · Limsa Lominsa", "icon": "⚓", "ordered": true, "choice": "start-city", "note": "Your starting city’s quests — pick yours with the buttons above and the other two tuck away.", "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.lv-1-15-limsa-lominsa.coming-to-limsa-lominsa","name":"Coming to Limsa Lominsa","badges":["Lv 1"]},
         {"id":"msq.arr.lv-1-15-limsa-lominsa.close-to-home","name":"Close to Home","badges":["Lv 1"]},
         {"id":"msq.arr.lv-1-15-limsa-lominsa.on-to-summerford","name":"On to Summerford","badges":["Lv 4"]},
@@ -60,7 +60,7 @@
         {"id":"msq.arr.lv-1-15-limsa-lominsa.the-lominsan-envoy","name":"The Lominsan Envoy","badges":["Lv 15"]},
         {"id":"msq.arr.lv-1-15-limsa-lominsa.call-of-the-sea","name":"Call of the Sea","badges":["Lv 15"]}
       ]},
-      { "id": "msq.arr.lv-1-15-uldah", "name": "Lv 1–15 · Ul'dah", "icon": "🏜️", "ordered": true, "choice": "start-city", "note": "Your starting city’s quests — pick yours with the buttons above and the other two tuck away.", "items": [
+      { "id": "msq.arr.lv-1-15-uldah", "name": "Lv 1–15 · Ul'dah", "icon": "🏜️", "ordered": true, "choice": "start-city", "note": "Your starting city’s quests — pick yours with the buttons above and the other two tuck away.", "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.lv-1-15-uldah.coming-to-uldah","name":"Coming to Ul'dah","badges":["Lv 1"]},
         {"id":"msq.arr.lv-1-15-uldah.close-to-home","name":"Close to Home","badges":["Lv 1"]},
         {"id":"msq.arr.lv-1-15-uldah.we-must-rebuild","name":"We Must Rebuild","badges":["Lv 4"]},
@@ -87,7 +87,7 @@
         {"id":"msq.arr.lv-1-15-uldah.the-uldahn-envoy","name":"The Ul'dahn Envoy","badges":["Lv 15"]},
         {"id":"msq.arr.lv-1-15-uldah.call-of-the-sea","name":"Call of the Sea","badges":["Lv 15"]}
       ]},
-      { "id": "msq.arr.lv-15-20", "name": "Lv 15–20", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.arr.lv-15-20", "name": "Lv 15–20", "icon": "📜", "ordered": true, "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.its-probably-pirates","name":"It's Probably Pirates","badges":["Lv 15","⚔️ Sastasha"]},
         {"id":"msq.arr.call-of-the-forest","name":"Call of the Forest","badges":["Lv 15"]},
         {"id":"msq.arr.fire-in-the-gloom","name":"Fire in the Gloom","badges":["Lv 16","⚔️ The Tam-Tara Deepcroft"]},
@@ -115,7 +115,7 @@
         {"id":"msq.arr.sylphic-studies","name":"Sylphic Studies","badges":["Lv 20"]},
         {"id":"msq.arr.first-impressions","name":"First Impressions","badges":["Lv 20"]}
       ]},
-      { "id": "msq.arr.lv-21-30", "name": "Lv 21–30", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.arr.lv-21-30", "name": "Lv 21–30", "icon": "📜", "ordered": true, "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.first-contact","name":"First Contact","badges":["Lv 21"]},
         {"id":"msq.arr.dance-dance-diplomacy","name":"Dance Dance Diplomacy","badges":["Lv 21"]},
         {"id":"msq.arr.forest-friend","name":"Forest Friend","badges":["Lv 21"]},
@@ -162,7 +162,7 @@
         {"id":"msq.arr.a-modest-proposal","name":"A Modest Proposal","badges":["Lv 30"]},
         {"id":"msq.arr.trial-by-turtle","name":"Trial by Turtle","badges":["Lv 30"]}
       ]},
-      { "id": "msq.arr.lv-31-40", "name": "Lv 31–40", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.arr.lv-31-40", "name": "Lv 31–40", "icon": "📜", "ordered": true, "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.the-perfect-prey","name":"The Perfect Prey","badges":["Lv 31"]},
         {"id":"msq.arr.when-the-worm-turns","name":"When the Worm Turns","badges":["Lv 31"]},
         {"id":"msq.arr.there-and-back-again","name":"There and Back Again","badges":["Lv 31"]},
@@ -201,7 +201,7 @@
         {"id":"msq.arr.blood-for-blood","name":"Blood for Blood","badges":["Lv 40"]},
         {"id":"msq.arr.the-heretic-among-us","name":"The Heretic among Us","badges":["Lv 40"]}
       ]},
-      { "id": "msq.arr.lv-41-50", "name": "Lv 41–50", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.arr.lv-41-50", "name": "Lv 41–50", "icon": "📜", "ordered": true, "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.in-pursuit-of-the-past","name":"In Pursuit of the Past","badges":["Lv 41","⚔️ The Stone Vigil"]},
         {"id":"msq.arr.into-the-eye-of-the-storm","name":"Into the Eye of the Storm","badges":["Lv 41"]},
         {"id":"msq.arr.sealed-with-science","name":"Sealed with Science","badges":["Lv 41"]},
@@ -236,7 +236,7 @@
         {"id":"msq.arr.rock-the-castrum","name":"Rock the Castrum","badges":["Lv 50","⚔️ Castrum Meridianum"]},
         {"id":"msq.arr.the-ultimate-weapon","name":"The Ultimate Weapon","badges":["Lv 50","⚔️ The Praetorium","🔥 The Porta Decumana"]}
       ]},
-      { "id": "msq.arr.21", "name": "2.1 · A Realm Awoken", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.arr.21", "name": "2.1 · A Realm Awoken", "icon": "✨", "ordered": true, "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.the-price-of-principles","name":"The Price of Principles","badges":["Lv 50"]},
         {"id":"msq.arr.moving-on","name":"Moving On","badges":["Lv 50"]},
         {"id":"msq.arr.all-things-in-time","name":"All Things in Time","badges":["Lv 50"]},
@@ -248,7 +248,7 @@
         {"id":"msq.arr.the-gifted","name":"The Gifted","badges":["Lv 50"]},
         {"id":"msq.arr.build-on-the-stone","name":"Build on the Stone","badges":["Lv 50"]}
       ]},
-      { "id": "msq.arr.22", "name": "2.2 · Through the Maelstrom", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.arr.22", "name": "2.2 · Through the Maelstrom", "icon": "✨", "ordered": true, "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.still-waters","name":"Still Waters","badges":["Lv 50"]},
         {"id":"msq.arr.a-final-temptation","name":"A Final Temptation","badges":["Lv 50"]},
         {"id":"msq.arr.the-mother-of-exiles","name":"The Mother of Exiles","badges":["Lv 50"]},
@@ -264,7 +264,7 @@
         {"id":"msq.arr.when-yugiri-met-the-fraternity","name":"When Yugiri Met the Fraternity","badges":["Lv 50"]},
         {"id":"msq.arr.through-the-maelstrom","name":"Through the Maelstrom","badges":["Lv 50"]}
       ]},
-      { "id": "msq.arr.23", "name": "2.3 · Defenders of Eorzea", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.arr.23", "name": "2.3 · Defenders of Eorzea", "icon": "✨", "ordered": true, "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.the-great-divide","name":"The Great Divide","badges":["Lv 50"]},
         {"id":"msq.arr.desperate-times","name":"Desperate Times","badges":["Lv 50"]},
         {"id":"msq.arr.shock-and-awe","name":"Shock and Awe","badges":["Lv 50"]},
@@ -280,7 +280,7 @@
         {"id":"msq.arr.when-the-cold-sets-in","name":"When the Cold Sets In","badges":["Lv 50"]},
         {"id":"msq.arr.brave-new-companions","name":"Brave New Companions","badges":["Lv 50"]}
       ]},
-      { "id": "msq.arr.24", "name": "2.4 · Dreams of Ice", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.arr.24", "name": "2.4 · Dreams of Ice", "icon": "✨", "ordered": true, "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.traitor-in-the-midst","name":"Traitor in the Midst","badges":["Lv 50"]},
         {"id":"msq.arr.back-and-fourth","name":"Back and Fourth","badges":["Lv 50"]},
         {"id":"msq.arr.coming-to-terms","name":"Coming to Terms","badges":["Lv 50"]},
@@ -300,7 +300,7 @@
         {"id":"msq.arr.the-reason-roaille","name":"The Reason Roaille","badges":["Lv 50"]},
         {"id":"msq.arr.let-us-cling-together","name":"Let Us Cling Together","badges":["Lv 50"]}
       ]},
-      { "id": "msq.arr.25", "name": "2.5 · Before the Fall – Part 1", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.arr.25", "name": "2.5 · Before the Fall – Part 1", "icon": "✨", "ordered": true, "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.good-intentions","name":"Good Intentions","badges":["Lv 50"]},
         {"id":"msq.arr.bait-and-switch","name":"Bait and Switch","badges":["Lv 50"]},
         {"id":"msq.arr.best-laid-schemes","name":"Best-laid Schemes","badges":["Lv 50"]},
@@ -310,7 +310,7 @@
         {"id":"msq.arr.an-uninvited-ascian","name":"An Uninvited Ascian","badges":["Lv 50","🔥 The Chrysalis"]},
         {"id":"msq.arr.in-memory-of-moenbryda","name":"In Memory of Moenbryda","badges":["Lv 50"]}
       ]},
-      { "id": "msq.arr.255", "name": "2.55 · Before the Fall – Part 2", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.arr.255", "name": "2.55 · Before the Fall – Part 2", "icon": "✨", "ordered": true, "group": "A Realm Reborn", "items": [
         {"id":"msq.arr.mask-of-grief","name":"Mask of Grief","badges":["Lv 50"]},
         {"id":"msq.arr.defenders-for-ishgard","name":"Defenders for Ishgard","badges":["Lv 50"]},
         {"id":"msq.arr.the-wyrms-roar","name":"The Wyrm's Roar","badges":["Lv 50"]},
@@ -327,10 +327,8 @@
         {"id":"msq.arr.come-but-not-gone","name":"Come, but Not Gone","badges":["Lv 50"]},
         {"id":"msq.arr.the-parting-glass","name":"The Parting Glass","badges":["Lv 50"]},
         {"id":"msq.arr.before-the-dawn","name":"Before the Dawn","badges":["Lv 50"]}
-      ]}
-    ]},
-    { "id": "hw", "name": "Heavensward", "icon": "🐉", "color": 1, "cats": [
-      { "id": "msq.hw.lv-50-51", "name": "Lv 50–51", "icon": "📜", "ordered": true, "items": [
+      ]},
+      { "id": "msq.hw.lv-50-51", "name": "Lv 50–51", "icon": "📜", "ordered": true, "group": "Heavensward", "items": [
         {"id":"msq.hw.coming-to-ishgard","name":"Coming to Ishgard","badges":["Lv 50"]},
         {"id":"msq.hw.taking-in-the-sights","name":"Taking in the Sights","badges":["Lv 50"]},
         {"id":"msq.hw.the-better-half","name":"The Better Half","badges":["Lv 50"]},
@@ -361,7 +359,7 @@
         {"id":"msq.hw.camp-of-the-convictors","name":"Camp of the Convictors","badges":["Lv 51"]},
         {"id":"msq.hw.purple-flame-purple-flame","name":"Purple Flame, Purple Flame","badges":["Lv 51"]}
       ]},
-      { "id": "msq.hw.lv-52-53", "name": "Lv 52–53", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.hw.lv-52-53", "name": "Lv 52–53", "icon": "📜", "ordered": true, "group": "Heavensward", "items": [
         {"id":"msq.hw.where-the-chocobos-roam","name":"Where the Chocobos Roam","badges":["Lv 52"]},
         {"id":"msq.hw.worse-than-dragons","name":"Worse than Dragons","badges":["Lv 52"]},
         {"id":"msq.hw.the-trine-towers","name":"The Trine Towers","badges":["Lv 52"]},
@@ -373,7 +371,7 @@
         {"id":"msq.hw.mourn-in-passing","name":"Mourn in Passing","badges":["Lv 53","⚔️ Sohm Al"]},
         {"id":"msq.hw.beyond-the-clouds","name":"Beyond the Clouds","badges":["Lv 53"]}
       ]},
-      { "id": "msq.hw.lv-54-55", "name": "Lv 54–55", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.hw.lv-54-55", "name": "Lv 54–55", "icon": "📜", "ordered": true, "group": "Heavensward", "items": [
         {"id":"msq.hw.mountaintop-diplomacy","name":"Mountaintop Diplomacy","badges":["Lv 54"]},
         {"id":"msq.hw.moghans-trial","name":"Moghan's Trial","badges":["Lv 54"]},
         {"id":"msq.hw.mogmugs-trial","name":"Mogmug's Trial","badges":["Lv 54"]},
@@ -392,7 +390,7 @@
         {"id":"msq.hw.into-the-aery","name":"Into the Aery","badges":["Lv 55","⚔️ The Aery"]},
         {"id":"msq.hw.the-song-begins","name":"The Song Begins","badges":["Lv 55"]}
       ]},
-      { "id": "msq.hw.lv-56-57", "name": "Lv 56–57", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.hw.lv-56-57", "name": "Lv 56–57", "icon": "📜", "ordered": true, "group": "Heavensward", "items": [
         {"id":"msq.hw.unrest-in-ishgard","name":"Unrest in Ishgard","badges":["Lv 56"]},
         {"id":"msq.hw.he-who-would-not-be-denied","name":"He Who Would Not Be Denied","badges":["Lv 56"]},
         {"id":"msq.hw.ill-weather-friends","name":"Ill-weather Friends","badges":["Lv 56"]},
@@ -417,7 +415,7 @@
         {"id":"msq.hw.tatarus-surprise","name":"Tataru's Surprise","badges":["Lv 57"]},
         {"id":"msq.hw.onward-to-sharlayan","name":"Onward to Sharlayan","badges":["Lv 57"]}
       ]},
-      { "id": "msq.hw.lv-58-60", "name": "Lv 58–60", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.hw.lv-58-60", "name": "Lv 58–60", "icon": "📜", "ordered": true, "group": "Heavensward", "items": [
         {"id":"msq.hw.a-great-new-nation","name":"A Great New Nation","badges":["Lv 58"]},
         {"id":"msq.hw.golems-begone","name":"Golems Begone","badges":["Lv 58"]},
         {"id":"msq.hw.an-illuminati-incident","name":"An Illuminati Incident","badges":["Lv 58"]},
@@ -434,7 +432,7 @@
         {"id":"msq.hw.fetters-of-lament","name":"Fetters of Lament","badges":["Lv 59"]},
         {"id":"msq.hw.heavensward","name":"Heavensward","badges":["Lv 60","⚔️ The Aetherochemical Research Facility","🔥 The Singularity Reactor"]}
       ]},
-      { "id": "msq.hw.31", "name": "3.1 · As Goes Light, So Goes Darkness", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.hw.31", "name": "3.1 · As Goes Light, So Goes Darkness", "icon": "✨", "ordered": true, "group": "Heavensward", "items": [
         {"id":"msq.hw.an-uncertain-future","name":"An Uncertain Future","badges":["Lv 60"]},
         {"id":"msq.hw.breaking-the-cycle","name":"Breaking the Cycle","badges":["Lv 60"]},
         {"id":"msq.hw.another-time-another-place","name":"Another Time, Another Place","badges":["Lv 60"]},
@@ -444,7 +442,7 @@
         {"id":"msq.hw.against-the-dying-of-the-light","name":"Against the Dying of the Light","badges":["Lv 60"]},
         {"id":"msq.hw.as-goes-light-so-goes-darkness","name":"As Goes Light, So Goes Darkness","badges":["Lv 60"]}
       ]},
-      { "id": "msq.hw.32", "name": "3.2 · The Gears of Change", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.hw.32", "name": "3.2 · The Gears of Change", "icon": "✨", "ordered": true, "group": "Heavensward", "items": [
         {"id":"msq.hw.as-it-once-was","name":"As It Once Was","badges":["Lv 60"]},
         {"id":"msq.hw.the-word-of-the-mother","name":"The Word of the Mother","badges":["Lv 60","⚔️ The Antitower"]},
         {"id":"msq.hw.this-war-of-ours","name":"This War of Ours","badges":["Lv 60"]},
@@ -457,7 +455,7 @@
         {"id":"msq.hw.for-those-we-can-yet-save","name":"For Those We Can Yet Save","badges":["Lv 60"]},
         {"id":"msq.hw.causes-and-costs","name":"Causes and Costs","badges":["Lv 60"]}
       ]},
-      { "id": "msq.hw.33", "name": "3.3 · Revenge of the Horde", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.hw.33", "name": "3.3 · Revenge of the Horde", "icon": "✨", "ordered": true, "group": "Heavensward", "items": [
         {"id":"msq.hw.the-man-within","name":"The Man Within","badges":["Lv 60"]},
         {"id":"msq.hw.an-ally-for-ishgard","name":"An Ally for Ishgard","badges":["Lv 60"]},
         {"id":"msq.hw.winning-over-the-wyrm","name":"Winning Over the Wyrm","badges":["Lv 60","⚔️ Sohr Khai"]},
@@ -465,7 +463,7 @@
         {"id":"msq.hw.heroes-of-the-hour","name":"Heroes of the Hour","badges":["Lv 60"]},
         {"id":"msq.hw.litany-of-peace","name":"Litany of Peace","badges":["Lv 60"]}
       ]},
-      { "id": "msq.hw.34", "name": "3.4 · Soul Surrender", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.hw.34", "name": "3.4 · Soul Surrender", "icon": "✨", "ordered": true, "group": "Heavensward", "items": [
         {"id":"msq.hw.promises-kept","name":"Promises Kept","badges":["Lv 60"]},
         {"id":"msq.hw.shadows-of-the-first","name":"Shadows of the First","badges":["Lv 60","⚔️ Xelphatol"]},
         {"id":"msq.hw.two-sides-of-a-coin","name":"Two Sides of a Coin","badges":["Lv 60"]},
@@ -477,22 +475,20 @@
         {"id":"msq.hw.one-life-for-one-world","name":"One Life for One World","badges":["Lv 60"]},
         {"id":"msq.hw.an-ending-to-mark-a-new-beginning","name":"An Ending to Mark a New Beginning","badges":["Lv 60"]}
       ]},
-      { "id": "msq.hw.35", "name": "3.5 · The Far Edge of Fate – Part 1", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.hw.35", "name": "3.5 · The Far Edge of Fate – Part 1", "icon": "✨", "ordered": true, "group": "Heavensward", "items": [
         {"id":"msq.hw.tidings-from-gyr-abania","name":"Tidings from Gyr Abania","badges":["Lv 60"]},
         {"id":"msq.hw.an-envoy-for-ishgard","name":"An Envoy for Ishgard","badges":["Lv 60"]},
         {"id":"msq.hw.an-allied-decision","name":"An Allied Decision","badges":["Lv 60"]},
         {"id":"msq.hw.griffin-griffin-on-the-wall","name":"Griffin, Griffin on the Wall","badges":["Lv 60","⚔️ Baelsar's Wall"]},
         {"id":"msq.hw.louisoixs-finest-student","name":"Louisoix's Finest Student","badges":["Lv 60"]}
       ]},
-      { "id": "msq.hw.356", "name": "3.56 · The Far Edge of Fate – Part 2", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.hw.356", "name": "3.56 · The Far Edge of Fate – Part 2", "icon": "✨", "ordered": true, "group": "Heavensward", "items": [
         {"id":"msq.hw.the-obvious-solution","name":"The Obvious Solution","badges":["Lv 60"]},
         {"id":"msq.hw.the-greater-obeisance","name":"The Greater Obeisance","badges":["Lv 60"]},
         {"id":"msq.hw.fly-free-my-pretty","name":"Fly Free, My Pretty","badges":["Lv 60"]},
         {"id":"msq.hw.the-far-edge-of-fate","name":"The Far Edge of Fate","badges":["Lv 60"]}
-      ]}
-    ]},
-    { "id": "sb", "name": "Stormblood", "icon": "🌸", "color": 0, "cats": [
-      { "id": "msq.sb.lv-60-61", "name": "Lv 60–61", "icon": "📜", "ordered": true, "items": [
+      ]},
+      { "id": "msq.sb.lv-60-61", "name": "Lv 60–61", "icon": "📜", "ordered": true, "group": "Stormblood", "items": [
         {"id":"msq.sb.beyond-the-great-wall","name":"Beyond the Great Wall","badges":["Lv 60"]},
         {"id":"msq.sb.lyse-takes-the-lead","name":"Lyse Takes the Lead","badges":["Lv 60"]},
         {"id":"msq.sb.the-promise-of-a-new-beginning","name":"The Promise of a New Beginning","badges":["Lv 60"]},
@@ -530,7 +526,7 @@
         {"id":"msq.sb.its-probably-a-trap","name":"It's Probably a Trap","badges":["Lv 61"]},
         {"id":"msq.sb.making-the-catfish-sing","name":"Making the Catfish Sing","badges":["Lv 61"]}
       ]},
-      { "id": "msq.sb.lv-62-63", "name": "Lv 62–63", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.sb.lv-62-63", "name": "Lv 62–63", "icon": "📜", "ordered": true, "group": "Stormblood", "items": [
         {"id":"msq.sb.once-more-to-the-ruby-sea","name":"Once More, to the Ruby Sea","badges":["Lv 62"]},
         {"id":"msq.sb.open-water","name":"Open Water","badges":["Lv 62"]},
         {"id":"msq.sb.boys-with-boats","name":"Boys with Boats","badges":["Lv 62"]},
@@ -551,7 +547,7 @@
         {"id":"msq.sb.tide-goes-in-imperials-go-out","name":"Tide Goes in, Imperials Go Out","badges":["Lv 63"]},
         {"id":"msq.sb.a-silence-in-three-parts","name":"A Silence in Three Parts","badges":["Lv 63"]}
       ]},
-      { "id": "msq.sb.lv-64-65", "name": "Lv 64–65", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.sb.lv-64-65", "name": "Lv 64–65", "icon": "📜", "ordered": true, "group": "Stormblood", "items": [
         {"id":"msq.sb.life-after-doma","name":"Life after Doma","badges":["Lv 64"]},
         {"id":"msq.sb.a-glimpse-of-madness","name":"A Glimpse of Madness","badges":["Lv 64"]},
         {"id":"msq.sb.the-stubborn-remainder","name":"The Stubborn Remainder","badges":["Lv 64"]},
@@ -573,7 +569,7 @@
         {"id":"msq.sb.in-the-footsteps-of-bardam-the-brave","name":"In the Footsteps of Bardam the Brave","badges":["Lv 65","⚔️ Bardam's Mettle"]},
         {"id":"msq.sb.the-children-of-azim","name":"The Children of Azim","badges":["Lv 65"]}
       ]},
-      { "id": "msq.sb.lv-66-67", "name": "Lv 66–67", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.sb.lv-66-67", "name": "Lv 66–67", "icon": "📜", "ordered": true, "group": "Stormblood", "items": [
         {"id":"msq.sb.the-labors-of-magnai","name":"The Labors of Magnai","badges":["Lv 66"]},
         {"id":"msq.sb.for-love-of-the-moon","name":"For Love of the Moon","badges":["Lv 66"]},
         {"id":"msq.sb.sworn-enemies-of-the-sun","name":"Sworn Enemies of the Sun","badges":["Lv 66"]},
@@ -602,7 +598,7 @@
         {"id":"msq.sb.the-lady-of-bliss","name":"The Lady of Bliss","badges":["Lv 67","🔥 Emanation"]},
         {"id":"msq.sb.the-silence-of-the-gods","name":"The Silence of the Gods","badges":["Lv 67"]}
       ]},
-      { "id": "msq.sb.lv-68-70", "name": "Lv 68–70", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.sb.lv-68-70", "name": "Lv 68–70", "icon": "📜", "ordered": true, "group": "Stormblood", "items": [
         {"id":"msq.sb.the-first-of-many","name":"The First of Many","badges":["Lv 68"]},
         {"id":"msq.sb.strong-and-unified","name":"Strong and Unified","badges":["Lv 68"]},
         {"id":"msq.sb.hells-open","name":"Hells Open","badges":["Lv 68"]},
@@ -624,7 +620,7 @@
         {"id":"msq.sb.the-measure-of-his-reach","name":"The Measure of His Reach","badges":["Lv 70"]},
         {"id":"msq.sb.stormblood","name":"Stormblood","badges":["Lv 70","⚔️ Ala Mhigo","🔥 The Royal Menagerie"]}
       ]},
-      { "id": "msq.sb.41", "name": "4.1 · The Legend Returns", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.sb.41", "name": "4.1 · The Legend Returns", "icon": "✨", "ordered": true, "group": "Stormblood", "items": [
         {"id":"msq.sb.arenvalds-adventure","name":"Arenvald's Adventure","badges":["Lv 70"]},
         {"id":"msq.sb.the-darkness-below","name":"The Darkness Below","badges":["Lv 70"]},
         {"id":"msq.sb.the-mad-kings-trove","name":"The Mad King's Trove","badges":["Lv 70","⚔️ The Drowned City of Skalla"]},
@@ -637,7 +633,7 @@
         {"id":"msq.sb.a-blissful-arrival","name":"A Blissful Arrival","badges":["Lv 70"]},
         {"id":"msq.sb.return-of-the-bull","name":"Return of the Bull","badges":["Lv 70"]}
       ]},
-      { "id": "msq.sb.42", "name": "4.2 · Rise of a New Sun", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.sb.42", "name": "4.2 · Rise of a New Sun", "icon": "✨", "ordered": true, "group": "Stormblood", "items": [
         {"id":"msq.sb.tidings-from-the-east","name":"Tidings from the East","badges":["Lv 70"]},
         {"id":"msq.sb.the-sword-in-the-store","name":"The Sword in the Store","badges":["Lv 70"]},
         {"id":"msq.sb.hope-on-the-waves","name":"Hope on the Waves","badges":["Lv 70"]},
@@ -647,7 +643,7 @@
         {"id":"msq.sb.a-guilty-conscience","name":"A Guilty Conscience","badges":["Lv 70"]},
         {"id":"msq.sb.rise-of-a-new-sun","name":"Rise of a New Sun","badges":["Lv 70"]}
       ]},
-      { "id": "msq.sb.43", "name": "4.3 · Under the Moonlight", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.sb.43", "name": "4.3 · Under the Moonlight", "icon": "✨", "ordered": true, "group": "Stormblood", "items": [
         {"id":"msq.sb.gosetsu-and-tsuyu","name":"Gosetsu and Tsuyu","badges":["Lv 70"]},
         {"id":"msq.sb.gone-like-the-morning-dew","name":"Gone Like the Morning Dew","badges":["Lv 70"]},
         {"id":"msq.sb.fruits-of-her-labor","name":"Fruits of Her Labor","badges":["Lv 70"]},
@@ -656,7 +652,7 @@
         {"id":"msq.sb.under-the-moonlight","name":"Under the Moonlight","badges":["Lv 70"]},
         {"id":"msq.sb.emissary-of-the-dawn","name":"Emissary of the Dawn","badges":["Lv 70"]}
       ]},
-      { "id": "msq.sb.44", "name": "4.4 · Prelude in Violet", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.sb.44", "name": "4.4 · Prelude in Violet", "icon": "✨", "ordered": true, "group": "Stormblood", "items": [
         {"id":"msq.sb.sisterly-act","name":"Sisterly Act","badges":["Lv 70"]},
         {"id":"msq.sb.feel-the-burn","name":"Feel the Burn","badges":["Lv 70","⚔️ The Burn"]},
         {"id":"msq.sb.shadows-in-the-empire","name":"Shadows in the Empire","badges":["Lv 70"]},
@@ -665,20 +661,18 @@
         {"id":"msq.sb.the-call","name":"The Call","badges":["Lv 70"]},
         {"id":"msq.sb.prelude-in-violet","name":"Prelude in Violet","badges":["Lv 70"]}
       ]},
-      { "id": "msq.sb.45", "name": "4.5 · A Requiem for Heroes – Part 1", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.sb.45", "name": "4.5 · A Requiem for Heroes – Part 1", "icon": "✨", "ordered": true, "group": "Stormblood", "items": [
         {"id":"msq.sb.soul-searching","name":"Soul Searching","badges":["Lv 70"]},
         {"id":"msq.sb.a-defectors-tidings","name":"A Defector's Tidings","badges":["Lv 70"]},
         {"id":"msq.sb.seiryus-wall","name":"Seiryu's Wall","badges":["Lv 70"]},
         {"id":"msq.sb.parley-on-the-front-lines","name":"Parley on the Front Lines","badges":["Lv 70"]},
         {"id":"msq.sb.the-face-of-war","name":"The Face of War","badges":["Lv 70","⚔️ The Ghimlyt Dark"]}
       ]},
-      { "id": "msq.sb.456", "name": "4.56 · A Requiem for Heroes – Part 2", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.sb.456", "name": "4.56 · A Requiem for Heroes – Part 2", "icon": "✨", "ordered": true, "group": "Stormblood", "items": [
         {"id":"msq.sb.a-brief-reprieve","name":"A Brief Reprieve","badges":["Lv 70"]},
         {"id":"msq.sb.a-requiem-for-heroes","name":"A Requiem for Heroes","badges":["Lv 70"]}
-      ]}
-    ]},
-    { "id": "shb", "name": "Shadowbringers", "icon": "🌌", "color": 3, "cats": [
-      { "id": "msq.shb.lv-70-71", "name": "Lv 70–71", "icon": "📜", "ordered": true, "items": [
+      ]},
+      { "id": "msq.shb.lv-70-71", "name": "Lv 70–71", "icon": "📜", "ordered": true, "group": "Shadowbringers", "items": [
         {"id":"msq.shb.the-syrcus-trench","name":"The Syrcus Trench","badges":["Lv 70"]},
         {"id":"msq.shb.city-of-the-first","name":"City of the First","badges":["Lv 70"]},
         {"id":"msq.shb.travelers-of-norvrandt","name":"Travelers of Norvrandt","badges":["Lv 70"]},
@@ -703,7 +697,7 @@
         {"id":"msq.shb.the-lightwardens","name":"The Lightwardens","badges":["Lv 71","⚔️ Holminster Switch"]},
         {"id":"msq.shb.warrior-of-darkness","name":"Warrior of Darkness","badges":["Lv 71"]}
       ]},
-      { "id": "msq.shb.lv-72-73", "name": "Lv 72–73", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.shb.lv-72-73", "name": "Lv 72–73", "icon": "📜", "ordered": true, "group": "Shadowbringers", "items": [
         {"id":"msq.shb.an-unwelcome-guest","name":"An Unwelcome Guest","badges":["Lv 72"]},
         {"id":"msq.shb.the-crystariums-resolve","name":"The Crystarium's Resolve","badges":["Lv 72"]},
         {"id":"msq.shb.logistics-of-war","name":"Logistics of War","badges":["Lv 72"]},
@@ -725,7 +719,7 @@
         {"id":"msq.shb.acht-la-ormh-inn","name":"Acht-la Ormh Inn","badges":["Lv 73","🔥 The Dancing Plague"]},
         {"id":"msq.shb.the-wheel-turns","name":"The Wheel Turns","badges":["Lv 73"]}
       ]},
-      { "id": "msq.shb.lv-74-75", "name": "Lv 74–75", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.shb.lv-74-75", "name": "Lv 74–75", "icon": "📜", "ordered": true, "group": "Shadowbringers", "items": [
         {"id":"msq.shb.a-party-soon-divided","name":"A Party Soon Divided","badges":["Lv 74"]},
         {"id":"msq.shb.a-little-faith","name":"A Little Faith","badges":["Lv 74"]},
         {"id":"msq.shb.into-the-dark","name":"Into the Dark","badges":["Lv 74"]},
@@ -747,7 +741,7 @@
         {"id":"msq.shb.the-burden-of-knowledge","name":"The Burden of Knowledge","badges":["Lv 75","⚔️ The Qitana Ravel"]},
         {"id":"msq.shb.bearing-with-it","name":"Bearing With It","badges":["Lv 75"]}
       ]},
-      { "id": "msq.shb.lv-76-77", "name": "Lv 76–77", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.shb.lv-76-77", "name": "Lv 76–77", "icon": "📜", "ordered": true, "group": "Shadowbringers", "items": [
         {"id":"msq.shb.out-of-the-wood","name":"Out of the Wood","badges":["Lv 76"]},
         {"id":"msq.shb.when-it-rains","name":"When It Rains","badges":["Lv 76"]},
         {"id":"msq.shb.word-from-on-high","name":"Word from On High","badges":["Lv 76"]},
@@ -770,7 +764,7 @@
         {"id":"msq.shb.a-feast-of-lies","name":"A Feast of Lies","badges":["Lv 77"]},
         {"id":"msq.shb.paradise-fallen","name":"Paradise Fallen","badges":["Lv 77"]}
       ]},
-      { "id": "msq.shb.lv-78-79", "name": "Lv 78–79", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.shb.lv-78-79", "name": "Lv 78–79", "icon": "📜", "ordered": true, "group": "Shadowbringers", "items": [
         {"id":"msq.shb.the-ladder","name":"The Ladder","badges":["Lv 78"]},
         {"id":"msq.shb.the-view-from-above","name":"The View from Above","badges":["Lv 78"]},
         {"id":"msq.shb.in-mt-gulgs-shadow","name":"In Mt. Gulg's Shadow","badges":["Lv 78"]},
@@ -790,13 +784,13 @@
         {"id":"msq.shb.city-of-the-ancients","name":"City of the Ancients","badges":["Lv 79"]},
         {"id":"msq.shb.the-light-of-inspiration","name":"The Light of Inspiration","badges":["Lv 79"]}
       ]},
-      { "id": "msq.shb.lv-80", "name": "Lv 80", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.shb.lv-80", "name": "Lv 80", "icon": "📜", "ordered": true, "group": "Shadowbringers", "items": [
         {"id":"msq.shb.the-illuminated-land","name":"The Illuminated Land","badges":["Lv 80"]},
         {"id":"msq.shb.the-end-of-a-world","name":"The End of a World","badges":["Lv 80"]},
         {"id":"msq.shb.a-greater-purpose","name":"A Greater Purpose","badges":["Lv 80"]},
         {"id":"msq.shb.shadowbringers","name":"Shadowbringers","badges":["Lv 80","⚔️ Amaurot","🔥 The Dying Gasp"]}
       ]},
-      { "id": "msq.shb.51", "name": "5.1 · Vows of Virtue, Deeds of Cruelty", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.shb.51", "name": "5.1 · Vows of Virtue, Deeds of Cruelty", "icon": "✨", "ordered": true, "group": "Shadowbringers", "items": [
         {"id":"msq.shb.shaken-resolve","name":"Shaken Resolve","badges":["Lv 80"]},
         {"id":"msq.shb.a-grand-adventure","name":"A Grand Adventure","badges":["Lv 80","⚔️ The Grand Cosmos"]},
         {"id":"msq.shb.a-welcome-guest","name":"A Welcome Guest","badges":["Lv 80"]},
@@ -808,7 +802,7 @@
         {"id":"msq.shb.moving-forward","name":"Moving Forward","badges":["Lv 80"]},
         {"id":"msq.shb.vows-of-virtue-deeds-of-cruelty","name":"Vows of Virtue, Deeds of Cruelty","badges":["Lv 80"]}
       ]},
-      { "id": "msq.shb.52", "name": "5.2 · Echoes of a Fallen Star", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.shb.52", "name": "5.2 · Echoes of a Fallen Star", "icon": "✨", "ordered": true, "group": "Shadowbringers", "items": [
         {"id":"msq.shb.old-enemies-new-threats","name":"Old Enemies, New Threats","badges":["Lv 80"]},
         {"id":"msq.shb.the-way-home","name":"The Way Home","badges":["Lv 80"]},
         {"id":"msq.shb.seeking-counsel","name":"Seeking Counsel","badges":["Lv 80"]},
@@ -820,7 +814,7 @@
         {"id":"msq.shb.beneath-the-surface","name":"Beneath the Surface","badges":["Lv 80","⚔️ Anamnesis Anyder"]},
         {"id":"msq.shb.echoes-of-a-fallen-star","name":"Echoes of a Fallen Star","badges":["Lv 80"]}
       ]},
-      { "id": "msq.shb.53", "name": "5.3 · Reflections in Crystal", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.shb.53", "name": "5.3 · Reflections in Crystal", "icon": "✨", "ordered": true, "group": "Shadowbringers", "items": [
         {"id":"msq.shb.in-the-name-of-the-light","name":"In the Name of the Light","badges":["Lv 80"]},
         {"id":"msq.shb.heroic-dreams","name":"Heroic Dreams","badges":["Lv 80"]},
         {"id":"msq.shb.fraying-threads","name":"Fraying Threads","badges":["Lv 80"]},
@@ -834,7 +828,7 @@
         {"id":"msq.shb.unto-the-morrow","name":"Unto the Morrow","badges":["Lv 80"]},
         {"id":"msq.shb.reflections-in-crystal","name":"Reflections in Crystal","badges":["Lv 80"]}
       ]},
-      { "id": "msq.shb.54", "name": "5.4 · Futures Rewritten", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.shb.54", "name": "5.4 · Futures Rewritten", "icon": "✨", "ordered": true, "group": "Shadowbringers", "items": [
         {"id":"msq.shb.alisaies-quest","name":"Alisaie's Quest","badges":["Lv 80"]},
         {"id":"msq.shb.the-wisdom-of-allag","name":"The Wisdom of Allag","badges":["Lv 80"]},
         {"id":"msq.shb.reviving-the-legacy","name":"Reviving the Legacy","badges":["Lv 80"]},
@@ -846,7 +840,7 @@
         {"id":"msq.shb.the-great-ship-vylbrand","name":"The Great Ship Vylbrand","badges":["Lv 80"]},
         {"id":"msq.shb.futures-rewritten","name":"Futures Rewritten","badges":["Lv 80"]}
       ]},
-      { "id": "msq.shb.55", "name": "5.5 · Death unto Dawn – Part I", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.shb.55", "name": "5.5 · Death unto Dawn – Part I", "icon": "✨", "ordered": true, "group": "Shadowbringers", "items": [
         {"id":"msq.shb.unto-the-breach","name":"Unto the Breach","badges":["Lv 80"]},
         {"id":"msq.shb.here-be-dragons","name":"Here Be Dragons","badges":["Lv 80"]},
         {"id":"msq.shb.righteous-indignation","name":"Righteous Indignation","badges":["Lv 80"]},
@@ -854,14 +848,12 @@
         {"id":"msq.shb.the-flames-of-war","name":"The Flames of War","badges":["Lv 80","⚔️ Paglth'an"]},
         {"id":"msq.shb.when-the-dust-settles","name":"When the Dust Settles","badges":["Lv 80"]}
       ]},
-      { "id": "msq.shb.555", "name": "5.55 · Death Unto Dawn – Part 2", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.shb.555", "name": "5.55 · Death Unto Dawn – Part 2", "icon": "✨", "ordered": true, "group": "Shadowbringers", "items": [
         {"id":"msq.shb.the-company-we-keep","name":"The Company We Keep","badges":["Lv 80"]},
         {"id":"msq.shb.on-official-business","name":"On Official Business","badges":["Lv 80"]},
         {"id":"msq.shb.death-unto-dawn","name":"Death Unto Dawn","badges":["Lv 80"]}
-      ]}
-    ]},
-    { "id": "ew", "name": "Endwalker", "icon": "🌙", "color": 1, "cats": [
-      { "id": "msq.ew.lv-80-81", "name": "Lv 80–81", "icon": "📜", "ordered": true, "items": [
+      ]},
+      { "id": "msq.ew.lv-80-81", "name": "Lv 80–81", "icon": "📜", "ordered": true, "group": "Endwalker", "items": [
         {"id":"msq.ew.the-next-ship-to-sail","name":"The Next Ship to Sail","badges":["Lv 80"]},
         {"id":"msq.ew.old-sharlayan-new-to-you","name":"Old Sharlayan, New to You","badges":["Lv 80"]},
         {"id":"msq.ew.hitting-the-books","name":"Hitting the Books","badges":["Lv 80","↳ Sharlayan"]},
@@ -886,7 +878,7 @@
         {"id":"msq.ew.the-jewel-of-thavnair","name":"The Jewel of Thavnair","badges":["Lv 81"]},
         {"id":"msq.ew.the-color-of-joy","name":"The Color of Joy","badges":["Lv 81"]}
       ]},
-      { "id": "msq.ew.lv-82-83", "name": "Lv 82–83", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.ew.lv-82-83", "name": "Lv 82–83", "icon": "📜", "ordered": true, "group": "Endwalker", "items": [
         {"id":"msq.ew.sound-the-bell-schools-in","name":"Sound the Bell, School's In","badges":["Lv 82"]},
         {"id":"msq.ew.a-capital-idea","name":"A Capital Idea","badges":["Lv 82"]},
         {"id":"msq.ew.best-of-the-best","name":"Best of the Best","badges":["Lv 82"]},
@@ -907,7 +899,7 @@
         {"id":"msq.ew.sea-of-sorrow","name":"Sea of Sorrow","badges":["Lv 83"]},
         {"id":"msq.ew.the-martyr","name":"The Martyr","badges":["Lv 83","🔥 The Dark Inside"]}
       ]},
-      { "id": "msq.ew.lv-84-85", "name": "Lv 84–85", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.ew.lv-84-85", "name": "Lv 84–85", "icon": "📜", "ordered": true, "group": "Endwalker", "items": [
         {"id":"msq.ew.in-shadows-wake","name":"In Shadow's Wake","badges":["Lv 84"]},
         {"id":"msq.ew.helping-hands","name":"Helping Hands","badges":["Lv 84"]},
         {"id":"msq.ew.a-harey-situation","name":"A Harey Situation","badges":["Lv 84"]},
@@ -929,7 +921,7 @@
         {"id":"msq.ew.under-his-wing","name":"Under His Wing","badges":["Lv 85"]},
         {"id":"msq.ew.at-worlds-end","name":"At World's End","badges":["Lv 85"]}
       ]},
-      { "id": "msq.ew.lv-86-87", "name": "Lv 86–87", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.ew.lv-86-87", "name": "Lv 86–87", "icon": "📜", "ordered": true, "group": "Endwalker", "items": [
         {"id":"msq.ew.return-to-the-crystarium","name":"Return to the Crystarium","badges":["Lv 86"]},
         {"id":"msq.ew.hope-upon-a-flower","name":"Hope Upon a Flower","badges":["Lv 86"]},
         {"id":"msq.ew.petalouda-hunt","name":"Petalouda Hunt","badges":["Lv 86"]},
@@ -951,7 +943,7 @@
         {"id":"msq.ew.caging-the-messenger","name":"Caging the Messenger","badges":["Lv 87","⚔️ Ktisis Hyperboreia"]},
         {"id":"msq.ew.thou-must-live-die-and-know","name":"Thou Must Live, Die, and Know","badges":["Lv 87"]}
       ]},
-      { "id": "msq.ew.lv-88-89", "name": "Lv 88–89", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.ew.lv-88-89", "name": "Lv 88–89", "icon": "📜", "ordered": true, "group": "Endwalker", "items": [
         {"id":"msq.ew.as-the-heavens-burn","name":"As the Heavens Burn","badges":["Lv 88"]},
         {"id":"msq.ew.outside-help","name":"Outside Help","badges":["Lv 88"]},
         {"id":"msq.ew.going-underground","name":"Going Underground","badges":["Lv 88"]},
@@ -973,7 +965,7 @@
         {"id":"msq.ew.f-sh-aban-on","name":"F//εsh AbanΔon┨Δ","badges":["Lv 89"]},
         {"id":"msq.ew.where-kn-wledge-leads","name":"Where Kn∞wledge Leads","badges":["Lv 89"]}
       ]},
-      { "id": "msq.ew.lv-90", "name": "Lv 90", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.ew.lv-90", "name": "Lv 90", "icon": "📜", "ordered": true, "group": "Endwalker", "items": [
         {"id":"msq.ew.vic-ry-lost","name":"Vic┨οry ̈ ̈ ̈╳, │̆││ε Lost","badges":["Lv 90"]},
         {"id":"msq.ew.no-oun","name":"┣┨̈//̈ No┨ΦounΔ•••","badges":["Lv 90"]},
         {"id":"msq.ew.hello-world","name":"Hello, World","badges":["Lv 90"]},
@@ -981,7 +973,7 @@
         {"id":"msq.ew.youre-not-alone","name":"You're Not Alone","badges":["Lv 90"]},
         {"id":"msq.ew.endwalker","name":"Endwalker","badges":["Lv 90","⚔️ The Dead Ends","🔥 The Final Day"]}
       ]},
-      { "id": "msq.ew.61", "name": "6.1 · Newfound Adventure", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.ew.61", "name": "6.1 · Newfound Adventure", "icon": "✨", "ordered": true, "group": "Endwalker", "items": [
         {"id":"msq.ew.newfound-adventure","name":"Newfound Adventure","badges":["Lv 90"]},
         {"id":"msq.ew.bountiful-ruins","name":"Bountiful Ruins","badges":["Lv 90"]},
         {"id":"msq.ew.friends-for-the-road","name":"Friends for the Road","badges":["Lv 90"]},
@@ -993,7 +985,7 @@
         {"id":"msq.ew.void-theory","name":"Void Theory","badges":["Lv 90"]},
         {"id":"msq.ew.a-satraps-duty","name":"A Satrap's Duty","badges":["Lv 90"]}
       ]},
-      { "id": "msq.ew.62", "name": "6.2 · Buried Memory", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.ew.62", "name": "6.2 · Buried Memory", "icon": "✨", "ordered": true, "group": "Endwalker", "items": [
         {"id":"msq.ew.in-search-of-azdaja","name":"In Search of Azdaja","badges":["Lv 90","⚔️ The Fell Court of Troia"]},
         {"id":"msq.ew.shadowed-remnants","name":"Shadowed Remnants","badges":["Lv 90"]},
         {"id":"msq.ew.where-everything-begins","name":"Where Everything Begins","badges":["Lv 90"]},
@@ -1004,7 +996,7 @@
         {"id":"msq.ew.a-world-with-light-and-life","name":"A World with Light and Life","badges":["Lv 90"]},
         {"id":"msq.ew.buried-memory","name":"Buried Memory","badges":["Lv 90"]}
       ]},
-      { "id": "msq.ew.63", "name": "6.3 · Gods Revel, Lands Tremble", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.ew.63", "name": "6.3 · Gods Revel, Lands Tremble", "icon": "✨", "ordered": true, "group": "Endwalker", "items": [
         {"id":"msq.ew.once-more-unto-the-void","name":"Once More unto the Void","badges":["Lv 90"]},
         {"id":"msq.ew.a-cold-reunion","name":"A Cold Reunion","badges":["Lv 90"]},
         {"id":"msq.ew.kindled-spirit","name":"Kindled Spirit","badges":["Lv 90"]},
@@ -1015,7 +1007,7 @@
         {"id":"msq.ew.desires-untold","name":"Desires Untold","badges":["Lv 90","🔥 Mount Ordeals"]},
         {"id":"msq.ew.gods-revel-lands-tremble","name":"Gods Revel, Lands Tremble","badges":["Lv 90"]}
       ]},
-      { "id": "msq.ew.64", "name": "6.4 · The Dark Throne", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.ew.64", "name": "6.4 · The Dark Throne", "icon": "✨", "ordered": true, "group": "Endwalker", "items": [
         {"id":"msq.ew.currying-flavor","name":"Currying Flavor","badges":["Lv 90"]},
         {"id":"msq.ew.going-haam","name":"Going Haam","badges":["Lv 90","⚔️ The Aetherfont"]},
         {"id":"msq.ew.like-fear-to-flame","name":"Like Fear to Flame","badges":["Lv 90"]},
@@ -1026,7 +1018,7 @@
         {"id":"msq.ew.abyssal-dark","name":"Abyssal Dark","badges":["Lv 90","🔥 The Voidcast Dais"]},
         {"id":"msq.ew.the-dark-throne","name":"The Dark Throne","badges":["Lv 90"]}
       ]},
-      { "id": "msq.ew.65", "name": "6.5 · Growing Light – Part 1", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.ew.65", "name": "6.5 · Growing Light – Part 1", "icon": "✨", "ordered": true, "group": "Endwalker", "items": [
         {"id":"msq.ew.seeking-the-light","name":"Seeking the Light","badges":["Lv 90"]},
         {"id":"msq.ew.appealing-to-the-masses","name":"Appealing to the Masses","badges":["Lv 90"]},
         {"id":"msq.ew.in-defiance-of-fate","name":"In Defiance of Fate","badges":["Lv 90"]},
@@ -1035,14 +1027,12 @@
         {"id":"msq.ew.reunited-at-last","name":"Reunited at Last","badges":["Lv 90"]},
         {"id":"msq.ew.growing-light","name":"Growing Light","badges":["Lv 90"]}
       ]},
-      { "id": "msq.ew.655", "name": "6.55 · Growing Light – Part 2", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.ew.655", "name": "6.55 · Growing Light – Part 2", "icon": "✨", "ordered": true, "group": "Endwalker", "items": [
         {"id":"msq.ew.when-one-door-closes","name":"When One Door Closes...","badges":["Lv 90"]},
         {"id":"msq.ew.the-game-is-afoot","name":"The Game Is Afoot","badges":["Lv 90"]},
         {"id":"msq.ew.the-coming-dawn","name":"The Coming Dawn","badges":["Lv 90"]}
-      ]}
-    ]},
-    { "id": "dt", "name": "Dawntrail", "icon": "🌺", "color": 4, "cats": [
-      { "id": "msq.dt.lv-90-91", "name": "Lv 90–91", "icon": "📜", "ordered": true, "items": [
+      ]},
+      { "id": "msq.dt.lv-90-91", "name": "Lv 90–91", "icon": "📜", "ordered": true, "group": "Dawntrail", "items": [
         {"id":"msq.dt.a-new-world-to-explore","name":"A New World to Explore","badges":["Lv 90"]},
         {"id":"msq.dt.the-nation-of-tuliyollal","name":"The Nation of Tuliyollal","badges":["Lv 90"]},
         {"id":"msq.dt.a-city-of-stairs","name":"A City of Stairs","badges":["Lv 90"]},
@@ -1064,7 +1054,7 @@
         {"id":"msq.dt.the-success-of-others","name":"The Success of Others","badges":["Lv 91"]},
         {"id":"msq.dt.for-all-turali","name":"For All Turali","badges":["Lv 91","⚔️ Ihuykatumu"]}
       ]},
-      { "id": "msq.dt.lv-92-93", "name": "Lv 92–93", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.dt.lv-92-93", "name": "Lv 92–93", "icon": "📜", "ordered": true, "group": "Dawntrail", "items": [
         {"id":"msq.dt.a-leaking-workpot","name":"A Leaking Workpot","badges":["Lv 92"]},
         {"id":"msq.dt.lending-a-helphand","name":"Lending a Helphand","badges":["Lv 92"]},
         {"id":"msq.dt.the-feat-of-pots","name":"The Feat of Pots","badges":["Lv 92"]},
@@ -1083,7 +1073,7 @@
         {"id":"msq.dt.the-feat-of-ice","name":"The Feat of Ice","badges":["Lv 93"]},
         {"id":"msq.dt.the-promise-of-peace","name":"The Promise of Peace","badges":["Lv 93"]}
       ]},
-      { "id": "msq.dt.lv-94-95", "name": "Lv 94–95", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.dt.lv-94-95", "name": "Lv 94–95", "icon": "📜", "ordered": true, "group": "Dawntrail", "items": [
         {"id":"msq.dt.the-leap-to-yak-tel","name":"The Leap to Yak T'el","badges":["Lv 94"]},
         {"id":"msq.dt.village-of-the-hunt","name":"Village of the Hunt","badges":["Lv 94"]},
         {"id":"msq.dt.a-history-of-violence","name":"A History of Violence","badges":["Lv 94"]},
@@ -1106,7 +1096,7 @@
         {"id":"msq.dt.law-of-the-land","name":"Law of the Land","badges":["Lv 95"]},
         {"id":"msq.dt.on-track","name":"On Track","badges":["Lv 95"]}
       ]},
-      { "id": "msq.dt.lv-96-97", "name": "Lv 96–97", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.dt.lv-96-97", "name": "Lv 96–97", "icon": "📜", "ordered": true, "group": "Dawntrail", "items": [
         {"id":"msq.dt.one-with-nature","name":"One with Nature","badges":["Lv 96"]},
         {"id":"msq.dt.and-the-land-would-tremble","name":"And the Land Would Tremble","badges":["Lv 96"]},
         {"id":"msq.dt.no-time-for-tears","name":"No Time for Tears","badges":["Lv 96"]},
@@ -1125,7 +1115,7 @@
         {"id":"msq.dt.solution-nine","name":"Solution Nine","badges":["Lv 97"]},
         {"id":"msq.dt.the-queens-tour","name":"The Queen's Tour","badges":["Lv 97"]}
       ]},
-      { "id": "msq.dt.lv-98-99", "name": "Lv 98–99", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.dt.lv-98-99", "name": "Lv 98–99", "icon": "📜", "ordered": true, "group": "Dawntrail", "items": [
         {"id":"msq.dt.her-people-her-family","name":"Her People, Her Family","badges":["Lv 98"]},
         {"id":"msq.dt.scales-of-blue","name":"Scales of Blue","badges":["Lv 98"]},
         {"id":"msq.dt.gives-you-teeth","name":"Gives You Teeth","badges":["Lv 98"]},
@@ -1145,7 +1135,7 @@
         {"id":"msq.dt.the-land-of-dreams","name":"The Land of Dreams","badges":["Lv 99"]},
         {"id":"msq.dt.a-knight-of-alexandria","name":"A Knight of Alexandria","badges":["Lv 99"]}
       ]},
-      { "id": "msq.dt.lv-100", "name": "Lv 100", "icon": "📜", "ordered": true, "items": [
+      { "id": "msq.dt.lv-100", "name": "Lv 100", "icon": "📜", "ordered": true, "group": "Dawntrail", "items": [
         {"id":"msq.dt.the-sanctuary-of-the-strong","name":"The Sanctuary of the Strong","badges":["Lv 100"]},
         {"id":"msq.dt.the-taste-of-family","name":"The Taste of Family","badges":["Lv 100"]},
         {"id":"msq.dt.leafing-through-the-past","name":"Leafing through the Past","badges":["Lv 100"]},
@@ -1154,7 +1144,7 @@
         {"id":"msq.dt.a-journey-never-ending","name":"A Journey Never-ending","badges":["Lv 100"]},
         {"id":"msq.dt.dawntrail","name":"Dawntrail","badges":["Lv 100","⚔️ Alexandria","🔥 The Interphos"]}
       ]},
-      { "id": "msq.dt.71", "name": "7.1 · Crossroads", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.dt.71", "name": "7.1 · Crossroads", "icon": "✨", "ordered": true, "group": "Dawntrail", "items": [
         {"id":"msq.dt.a-royal-invitation","name":"A Royal Invitation","badges":["Lv 100"]},
         {"id":"msq.dt.alexandria-mourns","name":"Alexandria Mourns","badges":["Lv 100"]},
         {"id":"msq.dt.in-search-of-the-past","name":"In Search of the Past","badges":["Lv 100","⚔️ Yuweyawata Field Station"]},
@@ -1163,7 +1153,7 @@
         {"id":"msq.dt.the-warmth-of-family","name":"The Warmth of Family","badges":["Lv 100"]},
         {"id":"msq.dt.crossroads","name":"Crossroads","badges":["Lv 100"]}
       ]},
-      { "id": "msq.dt.72", "name": "7.2 · Seekers of Eternity", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.dt.72", "name": "7.2 · Seekers of Eternity", "icon": "✨", "ordered": true, "group": "Dawntrail", "items": [
         {"id":"msq.dt.a-glimmer-of-the-past","name":"A Glimmer of the Past","badges":["Lv 100"]},
         {"id":"msq.dt.memories-of-a-bygone-age","name":"Memories of a Bygone Age","badges":["Lv 100"]},
         {"id":"msq.dt.in-search-of-meaning","name":"In Search of Meaning","badges":["Lv 100"]},
@@ -1173,7 +1163,7 @@
         {"id":"msq.dt.shared-paths","name":"Shared Paths","badges":["Lv 100"]},
         {"id":"msq.dt.seekers-of-eternity","name":"Seekers of Eternity","badges":["Lv 100"]}
       ]},
-      { "id": "msq.dt.73", "name": "7.3 · The Promise of Tomorrow", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.dt.73", "name": "7.3 · The Promise of Tomorrow", "icon": "✨", "ordered": true, "group": "Dawntrail", "items": [
         {"id":"msq.dt.targeted-tragedy","name":"Targeted Tragedy","badges":["Lv 100"]},
         {"id":"msq.dt.the-endless-choice","name":"The Endless Choice","badges":["Lv 100"]},
         {"id":"msq.dt.my-memories-and-yours","name":"My Memories and Yours","badges":["Lv 100"]},
@@ -1185,7 +1175,7 @@
         {"id":"msq.dt.blades-in-waiting","name":"Blades in Waiting","badges":["Lv 100"]},
         {"id":"msq.dt.the-promise-of-tomorrow","name":"The Promise of Tomorrow","badges":["Lv 100"]}
       ]},
-      { "id": "msq.dt.74", "name": "7.4 · Into the Mist", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.dt.74", "name": "7.4 · Into the Mist", "icon": "✨", "ordered": true, "group": "Dawntrail", "items": [
         {"id":"msq.dt.with-the-winds","name":"With the Winds","badges":["Lv 100"]},
         {"id":"msq.dt.through-the-thunder","name":"Through the Thunder","badges":["Lv 100"]},
         {"id":"msq.dt.beyond-the-mountains","name":"Beyond the Mountains","badges":["Lv 100","⚔️ Mistwake"]},
@@ -1196,14 +1186,14 @@
         {"id":"msq.dt.where-we-call-home","name":"Where We Call Home","badges":["Lv 100","🔥 Hell on Rails"]},
         {"id":"msq.dt.into-the-mist","name":"Into the Mist","badges":["Lv 100"]}
       ]},
-      { "id": "msq.dt.75", "name": "7.5 · Trail to the Heavens – Part 1", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.dt.75", "name": "7.5 · Trail to the Heavens – Part 1", "icon": "✨", "ordered": true, "group": "Dawntrail", "items": [
         {"id":"msq.dt.in-fates-footsteps","name":"In Fate's Footsteps","badges":["Lv 100"]},
         {"id":"msq.dt.two-worlds-entwined","name":"Two Worlds Entwined","badges":["Lv 100","⚔️ The Clyteum"]},
         {"id":"msq.dt.a-grave-presentiment","name":"A Grave Presentiment","badges":["Lv 100","🔥 The Unmaking"]},
         {"id":"msq.dt.a-beacon-from-beyond","name":"A Beacon from Beyond","badges":["Lv 100"]},
         {"id":"msq.dt.trail-to-the-heavens","name":"Trail to the Heavens","badges":["Lv 100"]}
       ]},
-      { "id": "msq.dt.756", "name": "7.56 · Trail to the Heavens – Part 2", "icon": "✨", "ordered": true, "items": [
+      { "id": "msq.dt.756", "name": "7.56 · Trail to the Heavens – Part 2", "icon": "✨", "ordered": true, "group": "Dawntrail", "items": [
         {"id":"msq.dt.a-winters-dream","name":"A Winter's Dream","badges":["Lv 100"]},
         {"id":"msq.dt.a-rush-of-cold-wind","name":"A Rush of Cold Wind","badges":["Lv 100"]},
         {"id":"msq.dt.the-world-locked-in-ice","name":"The World Locked in Ice","badges":["Lv 100"]},

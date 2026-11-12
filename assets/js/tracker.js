@@ -173,11 +173,11 @@ function buildState() {
   DATA.menus.forEach(m => {
     if (U.hidden.menus[m.id]) return;
     const mo = U.menus[m.id] || {};
-    const M = { id: m.id, official: true, name: mo.name || m.name, icon: mo.icon || m.icon, color: mo.color != null ? mo.color : (m.color || 0), cats: [] };
+    const M = { id: m.id, official: true, name: mo.name || m.name, icon: mo.icon || m.icon, color: mo.color != null ? mo.color : (m.color || 0), cats: [], layout: m.layout || '', groups: m.groups || [] };
     m.cats.forEach(c => {
       if (U.hidden.cats[c.id]) return;
       const co = U.cats[c.id] || {};
-      const C = { id: c.id, official: true, name: co.name || c.name, icon: co.icon || c.icon, note: c.note || '', pipLabels: c.tags || [], ordered: !!c.ordered, currency: c.currency || '', turnIn: !!c.turnIn, dishes: !!c.dishes, repeat: !!c.repeat, choice: c.choice || '',
+      const C = { id: c.id, official: true, name: co.name || c.name, icon: co.icon || c.icon, note: c.note || '', pipLabels: c.tags || [], ordered: !!c.ordered, currency: c.currency || '', turnIn: !!c.turnIn, dishes: !!c.dishes, repeat: !!c.repeat, choice: c.choice || '', group: c.group || '',
         reset: co.reset !== undefined ? co.reset : (c.reset || ''),
         // server resets are stored in UTC in the data file so they're right in every timezone
         resetUtcHour: (co.resetHour == null && co.reset === undefined && c.resetUtcHour != null) ? c.resetUtcHour : null,
@@ -372,7 +372,31 @@ function checkResets() {
 function fmtLeft(ms) { const h = Math.floor(ms / 36e5), mn = Math.floor(ms % 36e5 / 6e4); if (h >= 48) return Math.floor(h / 24) + 'd ' + (h % 24) + 'h'; if (h >= 1) return h + 'h ' + mn + 'm'; return Math.max(mn, 1) + 'm'; }
 
 /* ---------- render ---------- */
-function render() { renderTabs(); renderChips(); renderCat(); renderBubble(); }
+let CHAIN_NEXT = null; // FFXIV: the one quest you're actually up to
+function render() { CHAIN_NEXT = DATA.chain ? chainFirstOpen() : null; renderTabs(); renderChips(); renderCat(); renderBubble(); }
+const undecidedChoice = g => chainCats().filter(x => x.choice === g).length > 1;
+function chainFirstOpen() { for (const x of chainCats()) { if (x.choice && undecidedChoice(x.choice)) { if (x.items.some(y => isDone(x, y))) continue; return null; } /* starting city not picked yet */ const n = x.items.find(y => !isDone(x, y)); if (n) return n; } return null; }
+/* "sections" menus (FFXIV Main Story): pills pick a group (an expansion), its categories fold out below */
+const isSections = m => m && m.layout === 'sections';
+function menuGroups(m) { const out = []; m.cats.forEach(c => { if (c.group && !out.includes(c.group)) out.push(c.group); }); return out; }
+const groupIcon = (m, g) => (m.groups.find(x => x.name === g) || {}).icon || '📁';
+function curGroup(m) {
+  const gs = menuGroups(m); U.ui.grp = U.ui.grp || {};
+  if (gs.includes(U.ui.grp[m.id])) return U.ui.grp[m.id];
+  const nx = CHAIN_NEXT && m.cats.find(c => c.items.includes(CHAIN_NEXT));
+  return nx ? nx.group : gs[0];
+}
+function groupStats(m, g) { let n = 0, t = 0; m.cats.forEach(c => { if (c.group !== g) return; const s = catStats(c); n += s.full; t += s.items; }); return { n, t }; }
+function tickCats(cats, label) { // ✓ tick everything in these categories, or untick if they're all done already
+  const all = cats.every(c => c.items.every(it => isDone(c, it)));
+  const run = () => {
+    let moved = null;
+    cats.forEach(c => c.items.forEach(it => { setAll(c, it, !all); if (!all && it.pinned) { it.pinned = false; moved = it; } }));
+    if (moved) { const nx = chainFirstOpen(); if (nx) nx.pinned = true; }
+    save(); render(); toast(all ? `unticked ${label}` : `✓ ${label} — all done! 🎉`);
+  };
+  if (all) askConfirm('Untick everything?', `This unticks every quest in <b>${esc(label)}</b>.`, 'untick all', run); else run();
+}
 
 function renderTabs() {
   const pins = allPinned(), left = pins.filter(p => !isDone(p.c, p.it)).length;
@@ -390,6 +414,12 @@ function renderChips() {
   if (isSpecial()) { el.innerHTML = ''; el.style.display = 'none'; return; }
   el.style.display = '';
   const m = curMenu(), c = curCat();
+  if (isSections(m)) {
+    const cg = curGroup(m);
+    el.innerHTML = menuGroups(m).map(g => { const s = groupStats(m, g), all = s.t > 0 && s.n === s.t;
+      return `<button class="chip ${g === cg ? 'on' : ''} ${all ? 'done-all' : ''}" data-act="grp" data-id="${esc(g)}"><span>${esc(groupIcon(m, g))}</span>${esc(g)}<span class="mini">${all ? '✓ ' : ''}${s.n}/${s.t}</span></button>`; }).join('');
+    return;
+  }
   el.innerHTML = m.cats.map(x => {
     const s = catStats(x), all = !x.repeat && s.items > 0 && s.full === s.items;
     return `<button class="chip ${c && x.id === c.id ? 'on' : ''} ${all ? 'done-all' : ''}" data-act="cat" data-id="${esc(x.id)}"><span>${esc(x.icon)}</span>${esc(x.name)}<span class="mini">${x.repeat ? s.items : `${all ? '✓ ' : ''}${s.full}/${s.items}`}</span></button>`;
@@ -461,7 +491,7 @@ function itemCard(c, it, where) {
     tags += `<button class="turnin ${it.turned ? 'done' : ready ? 'ready' : ''}" data-act="turnin" data-id="${esc(it.id)}" aria-pressed="${it.turned}" title="${it.turned ? 'Undo — not handed in yet' : ready ? 'Got everything — mark it handed in' : 'Mark it handed in (ticks every item too)'}">${lbl}</button>`;
   }
   if (c.repeat && !it.once && d && it.parts.length) tags += `<button class="turnin again" data-act="again" data-id="${esc(it.id)}" title="Untick the ingredients so you can make it again">🔁 make again</button>`;
-  if (!d && !locked && c.ordered && c.items.find(x => !isDone(c, x)) === it) next = true;
+  if (!d && !locked && c.ordered && (DATA.chain ? CHAIN_NEXT === it : c.items.find(x => !isDone(c, x)) === it)) next = true;
   return `<div class="item ${d ? 'done' : ''} ${it.pinned ? 'pinned' : ''} ${locked ? 'locked' : ''} ${next ? 'next' : ''} ${dots ? 'has-levels' : ''}">${dots}
     ${next ? '<span class="next-badge">▶ next up</span>' : ''}
     ${it.pinned && !it.price ? '<span class="fav-badge">📌</span>' : isWished(it) ? '<span class="fav-badge">💝</span>' : ''}
@@ -600,6 +630,7 @@ function renderWish() {
 function renderCat() {
   if (isNeeded()) return renderNeeded();
   if (isWish()) return renderWish();
+  if (isSections(curMenu())) return renderSections();
   const c = curCat(), v = $('#catView');
   if (!c) { v.innerHTML = `<div class="empty"><div class="big">🌤️</div>This menu has no categories yet — add one above!</div>`; return; }
   const s = catStats(c), pct = s.total ? Math.round(s.n / s.total * 100) : 0;
@@ -643,6 +674,47 @@ function renderCat() {
     ${items.length ? `<div class="list">${items.map(it => itemCard(c, it)).join('')}</div>` : emptyMsg}`;
 }
 
+function renderSections() {
+  const m = curMenu(), g = curGroup(m), v = $('#catView'), q = (U.ui.q || '').trim().toLowerCase();
+  const cats = m.cats.filter(c => c.group === g), s = groupStats(m, g), pct = s.t ? Math.round(s.n / s.t * 100) : 0;
+  const allDone = s.t > 0 && s.n === s.t;
+  const choiceCats = cats.filter(x => x.choice);
+  const picker = choiceCats.length > 1 ? `<div class="choice-bar"><b>Which city did you start in?</b><span>${choiceCats.map(x => `<button class="small-btn" data-act="pickChoice" data-id="${esc(x.id)}">${esc(x.icon)} ${esc(x.name.split(' · ').pop())}</button>`).join('')}</span><small>The other starting chains get tucked away (bring them back anytime from 🧺).</small></div>` : '';
+  U.ui.sec = U.ui.sec || {};
+  const secs = cats.map(c => {
+    let items = c.items.slice();
+    if (q) items = items.filter(it => (it.name + ' ' + it.myNote + ' ' + (it.badges || []).join(' ')).toLowerCase().includes(q));
+    if (U.ui.hideDone) items = items.filter(it => !isDone(c, it));
+    if (U.ui.pinOnly) items = items.filter(it => it.pinned);
+    if ((q || U.ui.pinOnly) && !items.length) return '';
+    const cs = catStats(c), done = cs.items > 0 && cs.full === cs.items;
+    const open = q || U.ui.pinOnly ? true : U.ui.sec[c.id] != null ? U.ui.sec[c.id] : choiceCats.length > 1 ? !!c.choice : (CHAIN_NEXT ? c.items.includes(CHAIN_NEXT) : !done && c === cats.find(x => catStats(x).full < catStats(x).items));
+    return `<details class="sec ${done ? 'done' : ''}" data-cat="${esc(c.id)}" ${open ? 'open' : ''}>
+      <summary><span class="sec-name">${esc(c.icon)} ${esc(c.name)}</span><span class="sec-bar"><i style="width:${cs.items ? Math.round(cs.full / cs.items * 100) : 0}%"></i></span><span class="mini">${done ? '✓ ' : ''}${cs.full}/${cs.items}</span>
+        <button class="sec-tick" data-act="tickCat" data-id="${esc(c.id)}" title="${done ? 'Untick this section' : 'Tick every quest in this section'}">${done ? 'untick' : '✓ all'}</button></summary>
+      ${c.note && choiceCats.length > 1 && c.choice ? `<div class="cat-note">${esc(c.note)}</div>` : ''}
+      ${items.length ? `<div class="list">${items.map(it => itemCard(c, it)).join('')}</div>` : `<div class="sec-empty">${U.ui.hideDone ? 'all done here 🎉' : 'nothing here'}</div>`}
+    </details>`;
+  }).join('');
+  v.innerHTML = `${picker}
+    <div class="cat-head">
+      <h2>${esc(groupIcon(m, g))} ${esc(g)}</h2>
+      <div class="progress"><div class="bar"><i style="width:${pct}%"></i></div><span class="pct">${s.n}/${s.t} · ${pct}%</span></div>
+      <button class="small-btn" data-act="tickGroup">${allDone ? 'untick all' : '✓ tick all ' + esc(g)}</button>
+    </div>
+    <div class="toolbar">
+      <label class="search">🔍<input id="q" placeholder="search ${esc(g)} quests…" value="${esc(U.ui.q || '')}" aria-label="Search"></label>
+      <label class="toggle"><input type="checkbox" id="hideDone" ${U.ui.hideDone ? 'checked' : ''}> hide done</label>
+      <label class="toggle"><input type="checkbox" id="pinOnly" ${U.ui.pinOnly ? 'checked' : ''}> 📌 only</label>
+    </div>
+    <div class="secs">${secs || `<div class="empty"><div class="big">🔍</div>Nothing matches that search.</div>`}</div>`;
+}
+// remember which sections you folded open/closed
+document.addEventListener('toggle', e => {
+  const d = e.target; if (!d.matches || !d.matches('details.sec')) return;
+  U.ui.sec = U.ui.sec || {}; U.ui.sec[d.dataset.cat] = d.open; save();
+}, true);
+
 function renderBubble() {
   const b = $('#bubble');
   if (isWish()) {
@@ -653,6 +725,11 @@ function renderBubble() {
   if (isNeeded()) {
     const pins = allPinned(), left = pins.filter(p => !isDone(p.c, p.it)).length;
     b.textContent = !pins.length ? "pin what you're working on & i'll keep it here 📌" : left ? `${left} thing${left === 1 ? '' : 's'} on the go — you got this 🍊` : 'every pinned thing is done!! 🎉';
+    return;
+  }
+  if (isSections(curMenu())) {
+    const m = curMenu(), g = curGroup(m), st = groupStats(m, g), p = st.t ? st.n / st.t : 0;
+    b.textContent = p >= 1 ? `${g} complete!! you're amazing 🎉` : CHAIN_NEXT ? `up next: ${CHAIN_NEXT.name} ✨` : p > 0 ? `${st.n} of ${st.t} done in ${g} 🐾` : `let's start ${g}! ☁️`;
     return;
   }
   const c = curCat();
@@ -693,6 +770,9 @@ document.addEventListener('click', e => {
     if (i < 0 || j < 0 || j >= ids.length) return;
     [ids[i], ids[j]] = [ids[j], ids[i]]; savePinOrder(ids);
   }
+  else if (act === 'grp') { U.ui.grp = U.ui.grp || {}; U.ui.grp[curMenu().id] = t.dataset.id; U.ui.q = ''; save(); render(); }
+  else if (act === 'tickCat') { e.preventDefault(); const m = curMenu(), c = m.cats.find(x => x.id === t.dataset.id); if (c) tickCats([c], c.name); }
+  else if (act === 'tickGroup') { const m = curMenu(), g = curGroup(m); U.ui.grp = U.ui.grp || {}; U.ui.grp[m.id] = g; tickCats(m.cats.filter(c => c.group === g && !(c.choice && undecidedChoice(c.choice))), g); }
   else if (act === 'pickChoice') {
     const m = curMenu(), pick = m.cats.find(x => x.id === t.dataset.id); if (!pick) return;
     persist(); m.cats.forEach(x => { if (x.choice === pick.choice && x !== pick) U.hidden.cats[x.id] = 1; });

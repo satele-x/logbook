@@ -274,3 +274,22 @@ select.sort{color:var(--ink)}
 .choice-bar span{display:flex;gap:8px;flex-wrap:wrap}
 .choice-bar small{flex-basis:100%;color:var(--ink-soft);font-weight:700}
 .grp-move.attached{font-family:var(--font-body);font-size:12px;font-weight:800;color:var(--ink-soft)}
+
+/* fold-out sections (FFXIV Main Story) */
+.secs{display:flex;flex-direction:column;gap:10px}
+.sec{background:#ffffffa8;border:2px solid #f1e7f5;border-radius:18px;padding:0 12px}
+.sec[open]{padding-bottom:12px}
+.sec>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:12px 2px;cursor:pointer;font-family:var(--font-display);font-weight:600;font-size:16px}
+.sec>summary::-webkit-details-marker{display:none}
+.sec>summary::before{content:"▸";color:#b4a5bf;transition:transform .15s;display:inline-block}
+.sec[open]>summary::before{transform:rotate(90deg)}
+.sec-name{flex:0 1 auto;min-width:0}
+.sec-bar{flex:1;min-width:40px;height:8px;border-radius:999px;background:#f3e9f6;overflow:hidden}
+.sec-bar i{display:block;height:100%;background:var(--mint);border-radius:999px}
+.sec .mini{font-family:var(--font-body);font-size:12px;font-weight:800;color:var(--ink-soft)}
+.sec.done{background:#f0fbf5;border-color:#d4f3e3}
+.sec.done .sec-name{color:#5f9d80}
+.sec-tick{font-family:var(--font-body);font-size:12px;font-weight:800;padding:5px 10px;border-radius:10px;background:#fff;box-shadow:0 2px 0 #ead7ee;white-space:nowrap}
+.sec-tick:hover{background:#ece4ff}
+.sec-empty{color:var(--ink-soft);font-weight:700;font-size:13px;padding:4px 4px 2px}
+@media (max-width:560px){.sec-bar{display:none}}

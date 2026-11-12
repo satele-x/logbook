@@ -109,3 +109,7 @@ html[data-theme="dusk"] .turnin.done{background:#233a37;color:#8fd6b4;border-col
 html[data-theme="dusk"] .grp-move button{background:#352d50}
 html[data-theme="dusk"] .turnin.again{background:#3b3266;color:#c9b6ff;border-color:#5a4f80}
 html[data-theme="dusk"] .choice-bar{background:linear-gradient(135deg,#3a2a45,#2a3048);border-color:#5a4f80}
+html[data-theme="dusk"] .sec{background:#2a2442b3;border-color:#3a3158}
+html[data-theme="dusk"] .sec.done{background:#233a37;border-color:#2f5249}
+html[data-theme="dusk"] .sec-bar{background:#3a3158}
+html[data-theme="dusk"] .sec-tick{background:#352d50;box-shadow:0 2px 0 #1a1530}
